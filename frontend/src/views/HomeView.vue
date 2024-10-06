@@ -107,100 +107,148 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="pt-5" v-if="isCorrectNetworkSelected">
-    <h1 class="capitalize text-2xl text-white font-bold mb-4">Demo starter</h1>
+  <main class="min-h-screen bg-gray-900 p-6 sm:p-8">
+    <section v-if="isCorrectNetworkSelected" class="max-w-2xl mx-auto">
+      <header class="mb-10">
+        <h1 class="text-3xl text-white font-bold mb-2">Message Board</h1>
+        <p class="text-gray-400">Share and view messages on the blockchain</p>
+      </header>
 
-    <h2 class="capitalize text-xl text-white font-bold mb-4">Active message</h2>
-
-    <div class="message p-6 mb-6 rounded-xl border-2 border-gray-300" v-if="!isLoading">
-      <div class="flex items-center justify-between">
-        <h2 class="text-lg lg:text-lg m-0">{{ message }}</h2>
-        <div class="flex items-center flex-shrink-0">
-          <JazzIcon class="mr-2" :size="20" :address="author" />
-          <abbr :title="author" class="font-mono block no-underline">{{ abbrAddr(author) }}</abbr>
+      <div class="space-y-8">
+        <!-- Current Message Card -->
+        <div class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+          <h2 class="text-xl text-white font-semibold mb-4 flex items-center">
+            <span class="inline-block w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+            Active Message
+          </h2>
+          
+          <div v-if="!isLoading" class="message">
+            <p class="text-lg text-white mb-4">{{ message }}</p>
+            <div class="flex items-center justify-end space-x-2 text-gray-400">
+              <JazzIcon :size="24" :address="author" />
+              <abbr :title="author" class="font-mono text-sm">{{ abbrAddr(author) }}</abbr>
+            </div>
+          </div>
+          <div v-else class="animate-pulse">
+            <MessageLoader />
+          </div>
         </div>
+
+        <!-- Set New Message Card -->
+        <form @submit="setMessage" class="bg-gray-800 rounded-2xl p-6 border border-gray-700">
+          <h2 class="text-xl text-white font-semibold mb-4">Set New Message</h2>
+          
+          <div class="form-group">
+            <input
+              type="text"
+              id="newMessageText"
+              class="input-field"
+              placeholder=" "
+              v-model="newMessage"
+              required
+              :disabled="isSettingMessage"
+            />
+            <label for="newMessageText">
+              Your message
+              <span class="text-primary">*</span>
+            </label>
+          </div>
+
+          <AppButton 
+            type="submit" 
+            variant="primary" 
+            :disabled="isSettingMessage"
+            class="w-full justify-center"
+          >
+            <template v-if="isSettingMessage">
+              <span class="animate-pulse">Setting message...</span>
+            </template>
+            <template v-else>
+              Publish Message
+            </template>
+          </AppButton>
+
+          <!-- Error Display -->
+          <div v-if="errors.length > 0" class="mt-4 p-4 bg-red-900/50 rounded-xl border border-red-500/50">
+            <h3 class="text-red-400 font-semibold mb-2">Errors Encountered:</h3>
+            <ul class="list-disc pl-5 text-red-300 space-y-1">
+              <li v-for="error in errors" :key="error">{{ error }}</li>
+            </ul>
+          </div>
+        </form>
       </div>
-    </div>
-    <div v-else>
-      <div class="message p-6 pt-4 mb-6 rounded-xl border-2 border-gray-300">
-        <MessageLoader />
+    </section>
+
+    <!-- Network Error Section -->
+    <section v-else class="max-w-md mx-auto text-center">
+      <div class="bg-red-900/50 rounded-2xl p-8 border border-red-500/50">
+        <h2 class="text-2xl text-white font-bold mb-4">Network Error</h2>
+        <p class="text-gray-300 mb-6">
+          Please switch to the correct network to continue using this application.
+        </p>
+        <AppButton variant="primary" @click="switchNetwork" class="w-full justify-center">
+          Switch Network
+        </AppButton>
       </div>
-    </div>
-
-    <h2 class="capitalize text-xl text-white font-bold mb-4">Set message</h2>
-    <p class="text-base text-white mb-10">
-      Set your new message by filling the message field bellow.
-    </p>
-
-    <form @submit="setMessage">
-      <div class="form-group">
-        <input
-          type="text"
-          id="newMessageText"
-          class="peer"
-          placeholder=" "
-          v-model="newMessage"
-          required
-          :disabled="isSettingMessage"
-        />
-
-        <label
-          for="newMessageText"
-          class="peer-focus:text-primaryDark peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-5"
-        >
-          New message:
-          <span class="text-red-500">*</span>
-        </label>
-      </div>
-
-      <AppButton type="submit" variant="primary" :disabled="isSettingMessage">
-        <span v-if="isSettingMessage">Setting…</span>
-        <span v-else>Set Message</span>
-      </AppButton>
-
-      <div v-if="errors.length > 0" class="text-red-500 px-3 mt-5 rounded-xl-sm">
-        <span class="font-bold">Errors:</span>
-        <ul class="list-disc px-8">
-          <li v-for="error in errors" :key="error">{{ error }}</li>
-        </ul>
-      </div>
-    </form>
-  </section>
-  <section class="pt-5" v-else>
-    <h2 class="capitalize text-white text-2xl font-bold mb-4">Invalid network detected</h2>
-    <p class="text-white text-base mb-20">
-      In order to continue to use the app, please switch to the correct chain, by clicking on the
-      bellow "Switch network" button
-    </p>
-
-    <div class="flex justify-center">
-      <AppButton variant="secondary" @click="switchNetwork">Switch network</AppButton>
-    </div>
-  </section>
+    </section>
+  </main>
 </template>
 
 <style scoped lang="postcss">
-input {
-  @apply block my-4 p-1 mx-auto text-3xl border border-gray-400 rounded-xl;
-}
-
+/* Modern form styling */
 .form-group {
   @apply relative mb-6;
 }
 
-.form-group input,
-textarea {
-  @apply block rounded-xl py-6 px-5 w-full text-base text-black appearance-none focus:outline-none focus:ring-0 bg-white;
+.input-field {
+  @apply w-full px-4 py-3 bg-gray-700 border-2 border-gray-600 rounded-xl;
+  @apply text-white placeholder-gray-400;
+  @apply transition-all duration-200;
+  @apply focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary focus:ring-opacity-50;
 }
 
 .form-group label {
-  @apply absolute text-base text-primaryDark duration-300 transform -translate-y-5 scale-75 top-6 z-10 origin-[0] left-5;
+  @apply absolute text-sm text-gray-400 left-4 top-3;
+  @apply transition-all duration-200 transform;
+  @apply pointer-events-none;
 }
 
+.input-field:focus ~ label,
+.input-field:not(:placeholder-shown) ~ label {
+  @apply -translate-y-7 -translate-x-2 scale-90 text-primary;
+}
+
+/* Message styling */
 .message {
-  @apply bg-white rounded-xl border-primary;
-  border-width: 3px;
-  border-style: solid;
-  box-shadow: 0 7px 7px 0 rgba(0, 0, 0, 0.17);
+  @apply transition-all duration-300;
+}
+
+/* Animation for loading states */
+.animate-pulse {
+  @apply opacity-50;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* Responsive adjustments */
+@screen sm {
+  .message {
+    @apply p-1;
+  }
+}
+
+/* Accessibility */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    @apply transition-none animate-none;
+  }
 }
 </style>
