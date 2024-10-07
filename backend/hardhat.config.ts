@@ -10,6 +10,7 @@ import 'hardhat-watcher';
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
 import { HardhatUserConfig, task } from 'hardhat/config';
 import 'solidity-coverage';
+import { ethers } from 'ethers';
 
 const TASK_EXPORT_ABIS = 'export-abis';
 
@@ -76,6 +77,93 @@ task('setMessage')
     const receipt = await tx.wait();
     console.log(`Success! Transaction hash: ${receipt!.hash}`);
   });
+
+// Deploy PrivaHealth contract
+task('deploy-privahealth')
+  .setAction(async (args, hre) => {
+    await hre.run('compile');
+
+    const uwProvider = new JsonRpcProvider(hre.network.config.url);
+    const PrivaHealth = await hre.ethers.getContractFactory('PrivaHealth', new hre.ethers.Wallet(accounts[0], uwProvider));
+    const privaHealth = await PrivaHealth.deploy();
+    await privaHealth.waitForDeployment();
+
+    console.log(`PrivaHealth address: ${await privaHealth.getAddress()}`);
+    return privaHealth;
+});
+
+// Add a new patient record
+task('add-patient')
+  .addParam('address', 'contract address')
+  .addParam('patientId', 'patient ID')
+  .addParam('name', 'patient name')
+  .addParam('dob', 'date of birth (UNIX timestamp)')
+  .addParam('gender', 'patient gender')
+  .addParam('contactInfo', 'contact info hash')
+  .addParam('emergencyContact', 'emergency contact hash')
+  .addParam('medicalRecord', 'medical record hash')
+  .addParam('medications', 'current medications')
+  .addParam('allergies', 'known allergies')
+  .addParam('bloodType', 'blood type')
+  .setAction(async (args, hre) => {
+    await hre.run('compile');
+
+    const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
+    const tx = await privaHealth.addPatientRecord(
+      args.patientId,
+      args.name,
+      args.dob,
+      args.gender,
+      args.contactInfo,
+      args.emergencyContact,
+      args.medicalRecord,
+      args.medications,
+      args.allergies,
+      args.bloodType
+    );
+    const receipt = await tx.wait();
+    console.log(`Patient added successfully! Transaction hash: ${receipt!.hash}`);
+  });
+
+// Update a patient record
+task('update-patient')
+  .addParam('address', 'contract address')
+  .addParam('patientId', 'patient ID')
+  .addParam('name', 'patient name')
+  .addParam('medicalRecord', 'medical record hash')
+  .addParam('medications', 'current medications')
+  .addParam('allergies', 'known allergies')
+  .setAction(async (args, hre) => {
+    await hre.run('compile');
+
+    const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
+    const tx = await privaHealth.updatePatientRecord(
+      args.patientId,
+      args.name,
+      args.medicalRecord,
+      args.medications,
+      args.allergies
+    );
+    const receipt = await tx.wait();
+    console.log(`Patient record updated successfully! Transaction hash: ${receipt!.hash}`);
+  });
+
+// Get patient record
+// task('get-patient')
+//   .addParam('address', 'contract address')
+//   .addParam('patientId', 'patient ID')
+//   .setAction(async (args, hre) => {
+//     await hre.run('compile');
+
+//     const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
+//     const patientRecord = await privaHealth.getPatientRecord(args.patientId);
+//     console.log('Patient Record:');
+//     console.log(`Name: ${patientRecord[0]}`);
+//     console.log(`Date of Birth: ${new Date(patientRecord[1].toNumber() * 1000).toISOString()}`);
+//     console.log(`Gender: ${patientRecord[2]}`);
+//     console.log(`Blood Type: ${patientRecord[3]}`);
+//     console.log(`Last Updated: ${new Date(patientRecord[4].toNumber() * 1000).toISOString()}`);
+//   });
 
 // Hardhat Node and sapphire-dev test mnemonic.
 const TEST_HDWALLET = {
