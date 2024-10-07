@@ -108,15 +108,18 @@ onMounted(async () => {
 
 <template>
   <section class="pt-5" v-if="isCorrectNetworkSelected">
-    <AppButton variant="primary">
-      <span>Patient</span>
-    </AppButton>&nbsp;
-    <AppButton variant="primary">
-      <span>Doctor</span> 
-    </AppButton>
-    <h1 class="capitalize text-2xl text-white font-bold mb-4">Demo starter</h1>
+    <h2 class="capitalize text-2xl text-white font-bold mb-4">PrivaHealth Dashboard</h2>
 
-    <h2 class="capitalize text-xl text-white font-bold mb-4">Active message</h2>
+    <div class="flex space-x-4 mb-6">
+      <AppButton variant="primary">
+        <span>Patient Portal</span>
+      </AppButton>
+      <AppButton variant="primary">
+        <span>Doctor Portal</span>
+      </AppButton>
+    </div>
+
+    <h3 class="capitalize text-xl text-white font-bold mb-4">Latest Medical Record Update</h3>
 
     <div class="message p-6 mb-6 rounded-xl border-2 border-gray-300" v-if="!isLoading">
       <div class="flex items-center justify-between">
@@ -133,9 +136,9 @@ onMounted(async () => {
       </div>
     </div>
 
-    <h2 class="capitalize text-xl text-white font-bold mb-4">Set message</h2>
-    <p class="text-base text-white mb-10">
-      Set your new message by filling the message field bellow.
+    <h3 class="capitalize text-xl text-white font-bold mb-4">Update Medical Record</h3>
+    <p class="text-base text-white mb-6">
+      Update your medical record by filling in the field below.
     </p>
 
     <form @submit="setMessage">
@@ -145,14 +148,14 @@ onMounted(async () => {
 
         <label for="newMessageText"
           class="peer-focus:text-primaryDark peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-5">
-          New message:
+          New medical record entry:
           <span class="text-red-500">*</span>
         </label>
       </div>
 
       <AppButton type="submit" variant="primary" :disabled="isSettingMessage">
-        <span v-if="isSettingMessage">Setting…</span>
-        <span v-else>Set Message</span>
+        <span v-if="isSettingMessage">Updating…</span>
+        <span v-else>Update Record</span>
       </AppButton>
 
       <div v-if="errors.length > 0" class="text-red-500 px-3 mt-5 rounded-xl-sm">
@@ -167,7 +170,7 @@ onMounted(async () => {
     <h2 class="capitalize text-white text-2xl font-bold mb-4">Invalid network detected</h2>
     <p class="text-white text-base mb-20">
       In order to continue to use the app, please switch to the correct chain, by clicking on the
-      bellow "Switch network" button
+      below "Switch network" button
     </p>
 
     <div class="flex justify-center">
