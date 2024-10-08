@@ -17,6 +17,7 @@
     "format": "npm-run-all format:**"
   },
   "dependencies": {
+    "@iconify/vue": "^4.1.2",
     "@metamask/detect-provider": "^2.0.0",
     "@metamask/jazzicon": "^2.0.0",
     "@oasisprotocol/demo-starter-backend": "workspace:^",
