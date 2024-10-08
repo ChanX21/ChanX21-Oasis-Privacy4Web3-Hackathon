@@ -107,64 +107,8 @@ onMounted(async () => {
 </script>
 
 <template>
-  <section class="pt-5" v-if="isCorrectNetworkSelected">
-    <h2 class="capitalize text-2xl text-white font-bold mb-4">PrivaHealth Dashboard</h2>
-
-    <div class="flex space-x-4 mb-6">
-      <AppButton variant="primary">
-        <span>Patient Portal</span>
-      </AppButton>
-      <AppButton variant="primary">
-        <span>Doctor Portal</span>
-      </AppButton>
-    </div>
-
-    <h3 class="capitalize text-xl text-white font-bold mb-4">Latest Medical Record Update</h3>
-
-    <div class="message p-6 mb-6 rounded-xl border-2 border-gray-300" v-if="!isLoading">
-      <div class="flex items-center justify-between">
-        <h2 class="text-lg lg:text-lg m-0">{{ message }}</h2>
-        <div class="flex items-center flex-shrink-0">
-          <JazzIcon class="mr-2" :size="20" :address="author" />
-          <abbr :title="author" class="font-mono block no-underline">{{ abbrAddr(author) }}</abbr>
-        </div>
-      </div>
-    </div>
-    <div v-else>
-      <div class="message p-6 pt-4 mb-6 rounded-xl border-2 border-gray-300">
-        <MessageLoader />
-      </div>
-    </div>
-
-    <h3 class="capitalize text-xl text-white font-bold mb-4">Update Medical Record</h3>
-    <p class="text-base text-white mb-6">
-      Update your medical record by filling in the field below.
-    </p>
-
-    <form @submit="setMessage">
-      <div class="form-group">
-        <input type="text" id="newMessageText" class="peer" placeholder=" " v-model="newMessage" required
-          :disabled="isSettingMessage" />
-
-        <label for="newMessageText"
-          class="peer-focus:text-primaryDark peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-5">
-          New medical record entry:
-          <span class="text-red-500">*</span>
-        </label>
-      </div>
-
-      <AppButton type="submit" variant="primary" :disabled="isSettingMessage">
-        <span v-if="isSettingMessage">Updating…</span>
-        <span v-else>Update Record</span>
-      </AppButton>
-
-      <div v-if="errors.length > 0" class="text-red-500 px-3 mt-5 rounded-xl-sm">
-        <span class="font-bold">Errors:</span>
-        <ul class="list-disc px-8">
-          <li v-for="error in errors" :key="error">{{ error }}</li>
-        </ul>
-      </div>
-    </form>
+  <section class="pt-5" v-if="isCorrectNetworkSelected">   
+    
   </section>
   <section class="pt-5" v-else>
     <h2 class="capitalize text-white text-2xl font-bold mb-4">Invalid network detected</h2>

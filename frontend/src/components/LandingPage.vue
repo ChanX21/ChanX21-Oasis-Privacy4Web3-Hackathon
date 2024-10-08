@@ -13,17 +13,17 @@ const toggleDetails = () => {
   <section class="landing-page">
     <div class="container mx-auto px-4 py-8">
       <div class="flex flex-col items-center mb-8">
-        <h1 class="text-4xl font-bold text-primary mb-3 text-center">Welcome to PrivaHealth</h1>
-        <p class="text-lg text-gray-700 mb-6 text-center max-w-xl">
+        <h1 class="text-4xl font-bold text-white mb-3 text-center">Welcome to PrivaHealth</h1>
+        <p class="text-lg text-gray-300 mb-6 text-center max-w-xl">
           Revolutionizing healthcare with blockchain for secure, private medical records.
         </p>
-        <AppButton @click="toggleDetails" variant="primary" class="text-md px-6 py-2">
+        <AppButton @click="toggleDetails" variant="secondary" class="text-md px-6 py-2">
           {{ showDetails ? 'Hide Details' : 'Learn More' }}
         </AppButton>
       </div>
 
       <div v-if="showDetails" class="details-section">
-        <h2 class="text-2xl font-semibold text-primary mb-4 text-center">Why PrivaHealth?</h2>
+        <h2 class="text-2xl font-semibold text-white mb-4 text-center">Why PrivaHealth?</h2>
         <div class="grid md:grid-cols-2 gap-4">
           <div class="feature-card">
             <h3 class="text-lg font-semibold mb-1">Secure Blockchain Storage</h3>
@@ -43,6 +43,15 @@ const toggleDetails = () => {
           </div>
         </div>
       </div>
+
+      <div class="mt-12 flex justify-center space-x-4">
+        <AppButton variant="primary" class="text-md px-6 py-2">
+          Patient Portal
+        </AppButton>
+        <AppButton variant="primary" class="text-md px-6 py-2">
+          Doctor Portal
+        </AppButton>
+      </div>
     </div>
   </section>
 </template>
@@ -52,41 +61,44 @@ const toggleDetails = () => {
 
 .landing-page {
   font-family: 'Poppins', sans-serif;
-  background-color: #ffffff;
   min-height: 80vh;
   display: flex;
   align-items: center;
+  background: transparent;
 }
 
 .details-section {
-  background: #f8fafc;
+  background: rgba(255, 255, 255, 0.1);
   padding: 1.5rem;
   border-radius: 0.75rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  backdrop-filter: blur(10px);
 }
 
 .feature-card {
-  background: white;
+  background: rgba(255, 255, 255, 0.05);
   padding: 1rem;
   border-radius: 0.5rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   transition: all 0.3s ease;
 }
 
 .feature-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 h1, h2, h3 {
-  background: linear-gradient(135deg, #1a237e, #283593);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  color: transparent;
+  color: white;
 }
 
 p {
   line-height: 1.6;
+}
+
+.feature-card h3 {
+  color: #e0e0e0;
+}
+
+.feature-card p {
+  color: #bdbdbd;
 }
 </style>

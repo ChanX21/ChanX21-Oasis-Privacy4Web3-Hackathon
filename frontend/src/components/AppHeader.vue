@@ -12,7 +12,7 @@ import AccountPicker from '@/components/AccountPicker.vue';
             class="h-6 sm:h-9"
             alt="Oasis Network logo"
           />
-        </RouterLink>
+        </RouterLink>     
         <AccountPicker />
       </div>
     </nav>
