@@ -2,8 +2,9 @@
 pragma solidity ^0.8.0;
 
 import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract PrivaHealth {
+contract PrivaHealth is Ownable {
     struct DoctorReview {
         uint256 id;
         string review;
@@ -18,7 +19,7 @@ contract PrivaHealth {
         string gender; // Patient gender
         string contactInfoHash; // Hash of the patient's contact info (email, phone, etc.)
         string emergencyContactHash; // Hash of emergency contact info
-        string medicalRecordHash; // Hash or reference to the off-chain encrypted medical record (e.g., IPFS link)
+        string medicalRecord; // Hash or reference to the off-chain encrypted medical record (e.g., IPFS link)
         string currentMedications; // Short list of current medications (optional, hashed)
         string allergies; // Known allergies (optional, hashed)
         string bloodType; // Patient's blood type
@@ -66,7 +67,7 @@ contract PrivaHealth {
         string memory _gender,
         string memory _contactInfoHash,
         string memory _emergencyContactHash,
-        string memory _medicalRecordHash,
+        string memory _medicalRecord,
         string memory _currentMedications,
         string memory _allergies,
         string memory _bloodType
@@ -81,7 +82,7 @@ contract PrivaHealth {
         newPatient.gender = _gender;
         newPatient.contactInfoHash = _contactInfoHash;
         newPatient.emergencyContactHash = _emergencyContactHash;
-        newPatient.medicalRecordHash = _medicalRecordHash;
+        newPatient.medicalRecord = _medicalRecord;
         newPatient.currentMedications = _currentMedications;
         newPatient.allergies = _allergies;
         newPatient.bloodType = _bloodType;
@@ -96,14 +97,14 @@ contract PrivaHealth {
     // Function to update a patient's record
     function updatePatientRecord(
         uint256 _patientId,
-        string memory _medicalRecordHash,
+        string memory _medicalRecord,
         string memory _currentMedications,
         string memory _allergies
     ) public onlyAuthorized(_patientId) {
         require(patients[_patientId].patientId != 0, "Patient record does not exist");
 
         Patient storage patient = patients[_patientId];
-        patient.medicalRecordHash = _medicalRecordHash;
+        patient.medicalRecord = _medicalRecord;
         patient.currentMedications = _currentMedications;
         patient.allergies = _allergies;
         patient.lastUpdated = block.timestamp;
@@ -146,7 +147,7 @@ contract PrivaHealth {
         )
     {   
         Patient storage p = patients[_patientId];
-       require(p.patientId != 0, "Patient record does not exist");
+        require(p.patientId != 0, "Patient record does not exist");
         require(patients[_patientId].authorizedDoctors[msg.sender], "Only the authorized doctor can call this function");
         return (p.name, p.dateOfBirth, p.gender, p.bloodType, p.lastUpdated, p.dataSharing);
     }
@@ -157,18 +158,19 @@ contract PrivaHealth {
         view
         onlyAuthorized(_patientId)
         returns (
-            string memory medicalRecordHash,
+            string memory medicalRecord,
             string memory currentMedications,
             string memory allergies
         )
     {
         Patient storage p = patients[_patientId];
         require(p.patientId != 0, "Patient record does not exist");
-        return (p.medicalRecordHash, p.currentMedications, p.allergies);
+        return (p.medicalRecord, p.currentMedications, p.allergies);
     }
 
     // Function to add or remove authorized health centers (should be restricted to admin in a real-world scenario)
     function setHealthCenterAuthorization(address _healthCenter, bool _isAuthorized) public {
+        require(msg.sender == owner(), "Only the owner can call this function");
         authorizedHealthCenters[_healthCenter] = _isAuthorized;
     }
 }
