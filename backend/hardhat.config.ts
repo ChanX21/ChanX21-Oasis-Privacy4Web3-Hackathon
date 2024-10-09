@@ -83,8 +83,8 @@ task('deploy-privahealth')
   .setAction(async (args, hre) => {
     await hre.run('compile');
 
-    const uwProvider = new JsonRpcProvider(hre.network.config.url);
-    const PrivaHealth = await hre.ethers.getContractFactory('PrivaHealth', new hre.ethers.Wallet(accounts[0], uwProvider));
+    const uwProvider = new JsonRpcProvider(hre.network.config.url as string);
+    const PrivaHealth = await hre.ethers.getContractFactory('PrivaHealth', new hre.ethers.Wallet((accounts as any)[0], uwProvider));
     const privaHealth = await PrivaHealth.deploy();
     await privaHealth.waitForDeployment();
 
@@ -95,7 +95,6 @@ task('deploy-privahealth')
 // Add a new patient record
 task('add-patient')
   .addParam('address', 'contract address')
-  .addParam('patientId', 'patient ID')
   .addParam('name', 'patient name')
   .addParam('dob', 'date of birth (UNIX timestamp)')
   .addParam('gender', 'patient gender')
@@ -110,7 +109,6 @@ task('add-patient')
 
     const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
     const tx = await privaHealth.addPatientRecord(
-      args.patientId,
       args.name,
       args.dob,
       args.gender,
@@ -128,7 +126,6 @@ task('add-patient')
 // Update a patient record
 task('update-patient')
   .addParam('address', 'contract address')
-  .addParam('patientId', 'patient ID')
   .addParam('medicalRecord', 'medical record hash')
   .addParam('medications', 'current medications')
   .addParam('allergies', 'known allergies')
@@ -137,7 +134,6 @@ task('update-patient')
 
     const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
     const tx = await privaHealth.updatePatientRecord(
-      args.patientId,
       args.medicalRecord,
       args.medications,
       args.allergies
@@ -146,43 +142,54 @@ task('update-patient')
     console.log(`Patient record updated successfully! Transaction hash: ${receipt!.hash}`);
   });
 
-// Get patient record (public data)
-task('get-patient')
+// Get patient records (public data)
+task('get-patients')
   .addParam('address', 'contract address')
-  .addParam('patientId', 'patient ID')
   .setAction(async (args, hre) => {
     await hre.run('compile');
 
     const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
-    const patientRecord = await privaHealth.getPatientRecord(args.patientId);
-    console.log('Patient Record:');
-    console.log(`Name: ${patientRecord[0]}`);
-    console.log(`Date of Birth: ${new Date(patientRecord[1].toNumber() * 1000).toISOString()}`);
-    console.log(`Gender: ${patientRecord[2]}`);
-    console.log(`Blood Type: ${patientRecord[3]}`);
-    console.log(`Last Updated: ${new Date(patientRecord[4].toNumber() * 1000).toISOString()}`);
-    console.log(`Data Sharing: ${patientRecord[5]}`);
+    const patientRecords = await privaHealth.getPatientRecords();
+    console.log('Patient Records:');
+    patientRecords.forEach((record: any, index: number) => {
+      console.log(`Patient ${index + 1}:`);
+      console.log(`Address: ${record.patientAddress}`);
+      console.log(`Name: ${record.name}`);
+      console.log(`Date of Birth: ${new Date(Number(record.dateOfBirth) * 1000).toISOString()}`);
+      console.log(`Gender: ${record.gender}`);
+      console.log(`Blood Type: ${record.bloodType}`);
+      console.log(`Medical Record Hash: ${record.medicalRecord}`);
+      console.log(`Current Medications: ${record.currentMedications}`);
+      console.log(`Allergies: ${record.allergies}`);
+      console.log('---');
+    });
   });
 
 // Get sensitive patient data (only for authorized entities)
 task('get-sensitive-data')
   .addParam('address', 'contract address')
-  .addParam('patientId', 'patient ID')
+  .addParam('patientAddress', 'patient address')
   .setAction(async (args, hre) => {
     await hre.run('compile');
 
     const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
-    const sensitiveData = await privaHealth.getSensitivePatientData(args.patientId);
+    const sensitiveData = await privaHealth.getSensitivePatientData(args.patientAddress);
     console.log('Sensitive Patient Data:');
-    console.log(`Medical Record Hash: ${sensitiveData[0]}`);
-    console.log(`Current Medications: ${sensitiveData[1]}`);
-    console.log(`Allergies: ${sensitiveData[2]}`);
+    console.log(`Name: ${sensitiveData[0]}`);
+    console.log(`Date of Birth: ${new Date(Number(sensitiveData[1]) * 1000).toISOString()}`);
+    console.log(`Gender: ${sensitiveData[2]}`);
+    console.log(`Blood Type: ${sensitiveData[3]}`);
+    console.log(`Last Updated: ${new Date(Number(sensitiveData[4]) * 1000).toISOString()}`);
+    console.log(`Data Sharing: ${sensitiveData[5]}`);
+    console.log(`Medical Record Hash: ${sensitiveData[6]}`);
+    console.log(`Current Medications: ${sensitiveData[7]}`);
+    console.log(`Allergies: ${sensitiveData[8]}`);
   });
 
 // Authorize a doctor
 task('authorize-doctor')
-  .addParam('address', 'contract address')
-  .addParam('doctorAddress', 'doctor\'s address')
+  .addPositionalParam('address', 'contract address')
+  .addPositionalParam('doctorAddress', 'doctor\'s address')
   .setAction(async (args, hre) => {
     await hre.run('compile');
 
@@ -205,6 +212,32 @@ task('revoke-doctor')
     console.log(`Doctor's authorization revoked successfully! Transaction hash: ${receipt!.hash}`);
   });
 
+// Authorize a health center
+task('authorize-health-center')
+  .addParam('address', 'contract address')
+  .addParam('healthCenterAddress', 'health center\'s address')
+  .setAction(async (args, hre) => {
+    await hre.run('compile');
+
+    const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
+    const tx = await privaHealth.authorizeHealthCenter(args.healthCenterAddress);
+    const receipt = await tx.wait();
+    console.log(`Health center authorized successfully! Transaction hash: ${receipt!.hash}`);
+  });
+
+// Revoke a health center's authorization
+task('revoke-health-center')
+  .addParam('address', 'contract address')
+  .addParam('healthCenterAddress', 'health center\'s address')
+  .setAction(async (args, hre) => {
+    await hre.run('compile');
+
+    const privaHealth = await hre.ethers.getContractAt('PrivaHealth', args.address);
+    const tx = await privaHealth.revokeHealthCenter(args.healthCenterAddress);
+    const receipt = await tx.wait();
+    console.log(`Health center's authorization revoked successfully! Transaction hash: ${receipt!.hash}`);
+  });
+
 // Set data sharing preferences
 task('set-data-sharing')
   .addParam('address', 'contract address')
@@ -218,8 +251,8 @@ task('set-data-sharing')
     console.log(`Data sharing preference set successfully! Transaction hash: ${receipt!.hash}`);
   });
 
-// Set health center authorization
-task('set-health-center')
+// Set health center authorization (for owner)
+task('set-health-center-auth')
   .addParam('address', 'contract address')
   .addParam('healthCenter', 'health center address')
   .addParam('isAuthorized', 'authorization status (true/false)')
@@ -240,6 +273,7 @@ const TEST_HDWALLET = {
   count: 20,
   passphrase: "",
 };
+
 
 const accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : TEST_HDWALLET;
 

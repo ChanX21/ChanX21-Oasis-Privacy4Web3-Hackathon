@@ -1,6 +1,21 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
+
+//  _______   _______   ______  __     __   ______         __    __  ________   ______   __     ________  __    __ 
+// /       \ /       \ /      |/  |   /  | /      \       /  |  /  |/        | /      \ /  |   /        |/  |  /  |
+// $$$$$$$  |$$$$$$$  |$$$$$$/ $$ |   $$ |/$$$$$$  |      $$ |  $$ |$$$$$$$$/ /$$$$$$  |$$ |   $$$$$$$$/ $$ |  $$ |
+// $$ |__$$ |$$ |__$$ |  $$ |  $$ |   $$ |$$ |__$$ |      $$ |__$$ |$$ |__    $$ |__$$ |$$ |      $$ |   $$ |__$$ |
+// $$    $$/ $$    $$<   $$ |  $$  \ /$$/ $$    $$ |      $$    $$ |$$    |   $$    $$ |$$ |      $$ |   $$    $$ |
+// $$$$$$$/  $$$$$$$  |  $$ |   $$  /$$/  $$$$$$$$ |      $$$$$$$$ |$$$$$/    $$$$$$$$ |$$ |      $$ |   $$$$$$$$ |
+// $$ |      $$ |  $$ | _$$ |_   $$ $$/   $$ |  $$ |      $$ |  $$ |$$ |_____ $$ |  $$ |$$ |_____ $$ |   $$ |  $$ |
+// $$ |      $$ |  $$ |/ $$   |   $$$/    $$ |  $$ |      $$ |  $$ |$$       |$$ |  $$ |$$       |$$ |   $$ |  $$ |
+// $$/       $$/   $$/ $$$$$$/     $/     $$/   $$/       $$/   $$/ $$$$$$$$/ $$/   $$/ $$$$$$$$/ $$/    $$/   $$/ 
+                                                                                                                
+                                                                                                                
+                                                                                                                
+
+
 import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 
@@ -64,7 +79,6 @@ contract PrivaHealth is Ownable {
     // Modifier to ensure only authorized entities (doctors or health centers) can modify records
     modifier onlyAuthorized(address _patientAddress) {
         require(
-            authorizedHealthCenters[msg.sender] || 
             patients[_patientAddress].authorizedDoctors[msg.sender] ||
             patients[_patientAddress].authorizedHealthCenters[msg.sender],
             "Not authorized to modify this record"
@@ -80,6 +94,7 @@ contract PrivaHealth is Ownable {
 
     // Function to add a new patient record
     function addPatientRecord(
+        address _patientAddress,
         string memory _name,
         uint256 _dateOfBirth,
         string memory _gender,
@@ -89,7 +104,7 @@ contract PrivaHealth is Ownable {
         string memory _currentMedications,
         string memory _allergies,
         string memory _bloodType
-    ) public {
+    ) public  onlyAuthorized(_patientAddress) {
         require(patients[msg.sender].lastUpdated == 0, "Patient record already exists");
 
         Patient storage newPatient = patients[msg.sender];
@@ -110,11 +125,12 @@ contract PrivaHealth is Ownable {
 
     // Function to update a patient's record
     function updatePatientRecord(
+        address _patientAddress,
         string memory _medicalRecord,
         string memory _currentMedications,
         string memory _allergies
-    ) public onlyAuthorized(msg.sender) {
-        require(patients[msg.sender].lastUpdated != 0, "Patient record does not exist");
+    ) public onlyAuthorized(_patientAddress) {
+        require(patients[_patientAddress].lastUpdated != 0, "Patient record does not exist");
 
         Patient storage patient = patients[msg.sender];
         patient.medicalRecord = _medicalRecord;
@@ -137,6 +153,7 @@ contract PrivaHealth is Ownable {
 
     // Function for a patient to authorize a health center
     function authorizeHealthCenter(address _healthCenterAddress) public onlyPatient {
+        require(authorizedHealthCenters[_healthCenterAddress] == true, "Health center not authorized");
         patients[msg.sender].authorizedHealthCenters[_healthCenterAddress] = true;
     }
 
@@ -207,7 +224,6 @@ contract PrivaHealth is Ownable {
     function getSensitivePatientData(address _patientAddress)
         public
         view
-        onlyAuthorized(_patientAddress)
         returns (
             string memory name,
             uint256 dateOfBirth,
@@ -221,7 +237,7 @@ contract PrivaHealth is Ownable {
         )
     {
         Patient storage p = patients[_patientAddress];
-        require(p.lastUpdated != 0, "Patient record does not exist");
+        require(p.dateOfBirth != 0, "Patient record does not exist");
         require(
             authorizedHealthCenters[msg.sender] || 
             p.authorizedDoctors[msg.sender] ||
