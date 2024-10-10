@@ -28,7 +28,7 @@ const navigateTo = (route: string) => {
             <AppButton variant="secondary" class="text-lg px-6 py-3 w-full sm:w-auto" @click="navigateTo('/doctor')">
               For Doctors
             </AppButton>
-            <AppButton variant="tertiary" class="text-lg px-6 py-3 w-full sm:w-auto" @click="navigateTo('/health-center')">
+            <AppButton variant="tertiary" class="text-lg px-6 py-3 w-full sm:w-[200px]" @click="navigateTo('/health-center')">
               For Health Centers
             </AppButton>
           </div>

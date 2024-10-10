@@ -50,7 +50,7 @@ defineProps<{
 }
 
 .btn-tertiary {
-  @apply bg-transparent text-mediumDark px-0;
+  @apply bg-primary text-white rounded-full border-white;
 }
 
 .btn-choice {
