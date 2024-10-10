@@ -59,28 +59,54 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, onMounted } from 'vue';
+import { usePrivaHealth, useUnwrappedPrivaHealth } from '../contracts';
+import { useEthereumStore } from '../stores/ethereum';
+import { abbrAddr } from '@/utils/utils';
+
+const eth = useEthereumStore();
+const privaHealth = usePrivaHealth();
 
 const doctorAddress = ref('');
 const healthCentreAddress = ref('');
 const healthPlan = ref('');
+const errors = ref<string[]>([]);
+const isLoading = ref(true);
 
-const authorizeDoctor = () => {
-  console.log('Authorizing doctor:', doctorAddress.value);
-};
+onMounted(async () => {
+});
 
-const authorizeHealthCentre = () => {
-  console.log('Authorizing health centre:', healthCentreAddress.value);
-};
+function handleError(error: Error, errorMessage: string) {
+  errors.value.push(`${errorMessage}: ${error.message ?? JSON.stringify(error)}`);
+  console.error(error);
+}
 
-const getHealthPlan = () => {
-  healthPlan.value = `Your Personalized Health Plan:
-1. Exercise for 30 minutes daily
-2. Maintain a balanced diet
-3. Get 8 hours of sleep each night
-4. Schedule regular check-ups
-5. Stay hydrated by drinking 8 glasses of water daily`;
-};
+
+async function authorizeDoctor() {
+  try {
+    if (!doctorAddress.value) return;
+    await privaHealth.value?.authorizeDoctor(doctorAddress.value);
+    alert(`Doctor ${abbrAddr(doctorAddress.value)} authorized successfully`);
+    doctorAddress.value = '';
+  } catch (e) {
+    handleError(e as Error, 'Failed to authorize doctor');
+  }
+}
+
+async function authorizeHealthCentre() {
+  try {
+    if (!healthCentreAddress.value) return;
+    await privaHealth.value?.authorizeHealthCenter(healthCentreAddress.value);
+    alert(`Health Centre ${abbrAddr(healthCentreAddress.value)} authorized successfully`);
+    healthCentreAddress.value = '';
+  } catch (e) {
+    handleError(e as Error, 'Failed to authorize health centre');
+  }
+}
+
+async function getHealthPlan() {
+  healthPlan.value = "hellow world";
+}
 </script>
 
 <style scoped>

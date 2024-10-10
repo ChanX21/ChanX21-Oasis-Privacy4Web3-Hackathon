@@ -24,9 +24,9 @@ async function main() {
     "John Doe",
     946684800, // January 1, 2000
     "Male",
-    ethers.keccak256(ethers.toUtf8Bytes("john@example.com")),
-    ethers.keccak256(ethers.toUtf8Bytes("emergency@example.com")),
-    ethers.keccak256(ethers.toUtf8Bytes("IPFS_hash_of_medical_record")),
+    "john@example.com",
+    "emergency@example.com",
+    "IPFS_hash_of_medical_record",
     "Aspirin",
     "Peanuts",
     "A+"

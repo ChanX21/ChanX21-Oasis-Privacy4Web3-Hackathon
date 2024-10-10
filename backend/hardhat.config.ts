@@ -174,7 +174,9 @@ const TEST_HDWALLET = {
 };
 
 
-const accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY2, process.env.PRIVATE_KEY3, process.env.PRIVATE_KEY4] : TEST_HDWALLET;
+// const accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY, process.env.PRIVATE_KEY2, process.env.PRIVATE_KEY3, process.env.PRIVATE_KEY4] : TEST_HDWALLET;
+const accounts = process.env.PRIVATE_KEY ? [process.env.PRIVATE_KEY] : TEST_HDWALLET;
+
 
 const config: HardhatUserConfig = {
   networks: {
