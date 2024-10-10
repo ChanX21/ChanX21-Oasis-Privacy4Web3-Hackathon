@@ -239,7 +239,6 @@ contract PrivaHealth is Ownable {
         Patient storage p = patients[_patientAddress];
         require(p.dateOfBirth != 0, "Patient record does not exist");
         require(
-            authorizedHealthCenters[msg.sender] || 
             p.authorizedDoctors[msg.sender] ||
             p.authorizedHealthCenters[msg.sender],
             "Not authorized to access sensitive data"

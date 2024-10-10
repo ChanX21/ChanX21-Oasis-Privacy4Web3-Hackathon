@@ -2,8 +2,14 @@
 import { ref } from 'vue';
 import AppButton from '@/components/AppButton.vue';
 import { Icon } from '@iconify/vue';
+import { useRouter } from 'vue-router';
 
 const activeTab = ref('patients');
+const router = useRouter();
+
+const navigateTo = (route: string) => {
+  router.push(route);
+};
 </script>
 
 <template>
@@ -13,14 +19,17 @@ const activeTab = ref('patients');
         <div class="md:w-1/2 mb-8 md:mb-0">
           <h1 class="text-5xl font-bold text-white mb-6">Revolutionizing Healthcare with Blockchain</h1>
           <p class="text-xl text-gray-300 mb-8">
-            PrivaHealth empowers patients and healthcare providers with secure, private, and accessible medical records.
+            PrivaHealth empowers patients, doctors, and health centers with secure, private, and accessible medical records.
           </p>
-          <div class="flex space-x-4">
-            <AppButton variant="primary" class="text-lg px-8 py-3">
-              Get Started
+          <div class="flex flex-wrap gap-4">
+            <AppButton variant="primary" class="text-lg px-6 py-3 w-full sm:w-auto" @click="navigateTo('/patient')">
+              For Patients
             </AppButton>
-            <AppButton variant="secondary" class="text-lg px-8 py-3">
-              Learn More
+            <AppButton variant="secondary" class="text-lg px-6 py-3 w-full sm:w-auto" @click="navigateTo('/doctor')">
+              For Doctors
+            </AppButton>
+            <AppButton variant="tertiary" class="text-lg px-6 py-3 w-full sm:w-auto" @click="navigateTo('/health-center')">
+              For Health Centers
             </AppButton>
           </div>
         </div>
@@ -56,6 +65,7 @@ const activeTab = ref('patients');
           <div class="tab-buttons">
             <button @click="activeTab = 'patients'" :class="{ active: activeTab === 'patients' }">For Patients</button>
             <button @click="activeTab = 'doctors'" :class="{ active: activeTab === 'doctors' }">For Doctors</button>
+            <button @click="activeTab = 'centers'" :class="{ active: activeTab === 'centers' }">For Health Centers</button>
           </div>
         </div>
         <div v-if="activeTab === 'patients'" class="tab-content">
@@ -66,12 +76,20 @@ const activeTab = ref('patients');
             <li>Securely share records with healthcare providers</li>
           </ol>
         </div>
-        <div v-else class="tab-content">
+        <div v-else-if="activeTab === 'doctors'" class="tab-content">
           <ol class="steps">
             <li>Create a PrivaHealth professional account</li>
             <li>Verify your medical credentials</li>
             <li>Request access to patient records</li>
             <li>Collaborate with patients and other providers</li>
+          </ol>
+        </div>
+        <div v-else class="tab-content">
+          <ol class="steps">
+            <li>Register your health center on PrivaHealth</li>
+            <li>Set up secure data integration</li>
+            <li>Manage staff access and permissions</li>
+            <li>Streamline patient record management</li>
           </ol>
         </div>
       </div>
@@ -122,6 +140,8 @@ p {
   background: rgba(255, 255, 255, 0.1);
   border-radius: 2rem;
   padding: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .tab-buttons button {
@@ -129,6 +149,7 @@ p {
   border-radius: 1.5rem;
   color: white;
   transition: all 0.3s ease;
+  margin: 0.25rem;
 }
 
 .tab-buttons button.active {
@@ -186,6 +207,56 @@ p {
   }
   100% {
     transform: translateY(0px);
+  }
+}
+
+/* Add this new style for the tertiary button */
+:deep(.btn-tertiary) {
+  background-color: transparent;
+  color: white;
+  border: 2px solid white;
+}
+
+:deep(.btn-tertiary:hover) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Update button styles */
+:deep(.btn-primary) {
+  background-color: #3f51b5;
+  color: white;
+}
+
+:deep(.btn-primary:hover) {
+  background-color: #303f9f;
+}
+
+:deep(.btn-secondary) {
+  background-color: #ff4081;
+  color: white;
+}
+
+:deep(.btn-secondary:hover) {
+  background-color: #f50057;
+}
+
+:deep(.btn-tertiary) {
+  background-color: #4caf50;
+  color: white;
+}
+
+:deep(.btn-tertiary:hover) {
+  background-color: #45a049;
+}
+
+/* Adjust the button layout for small screens */
+@media (max-width: 640px) {
+  .hero-section .flex {
+    flex-direction: column;
+  }
+
+  .hero-section .flex > * {
+    margin-bottom: 1rem;
   }
 }
 </style>
