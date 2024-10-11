@@ -61,18 +61,24 @@ const patientData = ref('');
 const symptoms = ref('');
 const diagnosticsResult = ref('');
 
+//         return (p.name, p.dateOfBirth, p.gender, p.bloodType, p.lastUpdated, p.dataSharing, p.medicalRecord, p.currentMedications, p.allergies);
+
 const seePatientData = async () => {
   console.log('Viewing patient data for:', patientAddress.value);
-  const result = await privaHealth.value?.getSensitivePatientData((patientAddress.value).toLowerCase());
-  console.log(result);
+  const result = await privaHealth.value!.getSensitivePatientData((patientAddress.value));
+  console.log({result});
   if (result) {
-    patientData.value = `Patient Data for ${patientAddress.value}:
-- Name: ${result.name}
-- Date of Birth: ${new Date(Number(result.dateOfBirth)).toLocaleDateString()}
-- Gender: ${result.gender}
-- Blood Type: ${result.bloodType}
-- Allergies: ${result.allergies}
-- Last Updated: ${new Date(Number(result.lastUpdated)).toLocaleDateString()}`;
+    patientData.value = `Patient Data for ${patientAddress.value}
+- Name: ${result[0]}
+- Date of Birth: ${new Date(Number(result[1])*1000).toLocaleDateString()}
+- Gender: ${result[2]}
+- Blood Type: ${result[3]}
+- Last Updated:  ${new Date(Number(result[4])*1000).toLocaleDateString()}
+- Medical Records:  ${result[6]}
+- Current Medications: ${result[7]}
+- Allergies:  ${result[8]}
+`;
+
   } else {
     patientData.value = 'No data found for this patient.';
   }

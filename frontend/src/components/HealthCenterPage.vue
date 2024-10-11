@@ -176,10 +176,19 @@ const submitPatientData = async () => {
     if (!privaHealth.value) {
       throw new Error('PrivaHealth contract not initialized');
     }
-
+    
     // Convert dateOfBirth to Unix timestamp
     const dateOfBirth = Math.floor(new Date(patientData.value.dateOfBirth).getTime() / 1000);
-
+    console.log(patientData.value.patientAddress,
+      patientData.value.name,
+      dateOfBirth,
+      patientData.value.gender,
+      '', // contactInfoHash
+      '', // emergencyContactHash
+      patientData.value.medicalRecord,
+      patientData.value.currentMedications,
+      patientData.value.allergies,
+      patientData.value.bloodType)
     // Call the contract method to add patient record
     const tx = await privaHealth.value.addPatientRecord(
       patientData.value.patientAddress,
@@ -193,8 +202,10 @@ const submitPatientData = async () => {
       patientData.value.allergies,
       patientData.value.bloodType
     );
+    console.log({tx})
 
-    await tx.wait();
+    let receipt = await tx.wait();
+    console.log({receipt})
     console.log('Patient data submitted successfully');
     alert('Patient data submitted successfully');
 

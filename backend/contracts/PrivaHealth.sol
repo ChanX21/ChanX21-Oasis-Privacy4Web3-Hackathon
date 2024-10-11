@@ -271,7 +271,7 @@ contract PrivaHealth is Ownable {
         newPatient.currentMedications = "";
         newPatient.allergies = "";
         newPatient.bloodType = "";
-        newPatient.lastUpdated = block.timestamp;
+        newPatient.lastUpdated = 0;
         newPatient.dataSharing = false;
 
         initializedPatients[msg.sender] = true;
