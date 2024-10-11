@@ -2,6 +2,17 @@
   <div class="patient-page container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-8 text-white">Patient Dashboard</h1>
     
+    <!-- Initialize Patient Button -->
+    <div class="mb-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Initialize Patient</h2>
+      <button 
+        @click="initializePatient"
+        class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition duration-300"
+      >
+        Initialize Patient
+      </button>
+    </div>
+    
     <div class="grid md:grid-cols-2 gap-8">
       <!-- Authorize Doctor Form -->
       <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
@@ -60,7 +71,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { usePrivaHealth, useUnwrappedPrivaHealth } from '../contracts';
+import { usePrivaHealth } from '../contracts';
 import { useEthereumStore } from '../stores/ethereum';
 import { abbrAddr } from '@/utils/utils';
 
@@ -72,8 +83,10 @@ const healthCentreAddress = ref('');
 const healthPlan = ref('');
 const errors = ref<string[]>([]);
 const isLoading = ref(true);
+const isInitialized = ref(false);
 
 onMounted(async () => {
+  await checkInitializationStatus();
 });
 
 function handleError(error: Error, errorMessage: string) {
@@ -81,11 +94,37 @@ function handleError(error: Error, errorMessage: string) {
   console.error(error);
 }
 
+async function checkInitializationStatus() {
+  try {
+    const patientAddress = await eth.signer.value?.getAddress();
+    if (patientAddress) {
+      isInitialized.value = await privaHealth.value?.initializedPatients(patientAddress);
+    }
+  } catch (e) {
+    handleError(e as Error, 'Failed to check initialization status');
+  }
+}
+
+async function initializePatient() {
+  try {
+    if (isInitialized.value) {
+      alert('Patient already initialized');
+      return;
+    }
+    const tx = await privaHealth.value?.initializePatient();
+    await tx.wait();
+    alert('Patient initialized successfully');
+    isInitialized.value = true;
+  } catch (e) {
+    handleError(e as Error, 'Failed to initialize patient');
+  }
+}
 
 async function authorizeDoctor() {
   try {
     if (!doctorAddress.value) return;
-    await privaHealth.value?.authorizeDoctor(doctorAddress.value);
+    let result  = await privaHealth.value!.authorizeDoctor(doctorAddress.value);
+    console.log(result);
     alert(`Doctor ${abbrAddr(doctorAddress.value)} authorized successfully`);
     doctorAddress.value = '';
   } catch (e) {

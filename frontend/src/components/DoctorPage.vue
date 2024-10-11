@@ -51,21 +51,31 @@
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { usePrivaHealth } from '../contracts';
 
+
+
+const privaHealth = usePrivaHealth();
 const patientAddress = ref('');
 const patientData = ref('');
 const symptoms = ref('');
 const diagnosticsResult = ref('');
 
-const seePatientData = () => {
+const seePatientData = async () => {
   console.log('Viewing patient data for:', patientAddress.value);
-  // Simulating API call or blockchain interaction
-  patientData.value = `Patient Data for ${patientAddress.value}:
-- Name: John Doe
-- Age: 35
-- Blood Type: A+
-- Allergies: Penicillin
-- Last Visit: 2023-05-15`;
+  const result = await privaHealth.value?.getSensitivePatientData((patientAddress.value).toLowerCase());
+  console.log(result);
+  if (result) {
+    patientData.value = `Patient Data for ${patientAddress.value}:
+- Name: ${result.name}
+- Date of Birth: ${new Date(Number(result.dateOfBirth)).toLocaleDateString()}
+- Gender: ${result.gender}
+- Blood Type: ${result.bloodType}
+- Allergies: ${result.allergies}
+- Last Updated: ${new Date(Number(result.lastUpdated)).toLocaleDateString()}`;
+  } else {
+    patientData.value = 'No data found for this patient.';
+  }
 };
 
 const getDiagnosticsAssistance = () => {

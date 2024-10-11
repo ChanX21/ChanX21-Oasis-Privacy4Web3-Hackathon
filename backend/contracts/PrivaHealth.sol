@@ -67,6 +67,9 @@ contract PrivaHealth is Ownable {
     // Array to store addresses of patients who have enabled data sharing
     address[] public dataSharingArray;
 
+    // Mapping to keep track of initialized patients
+    mapping(address => bool) public initializedPatients;
+
     // Event to log when a new patient record is added
     event PatientRecordAdded(address patientAddress, string name);
 
@@ -75,6 +78,9 @@ contract PrivaHealth is Ownable {
 
     // Event to log when data sharing is enabled or disabled
     event DataSharingChanged(address patientAddress, bool isEnabled);
+
+    // Event to log when a patient is initialized
+    event PatientInitialized(address patientAddress);
 
     // Modifier to ensure only authorized entities (doctors or health centers) can modify records
     modifier onlyAuthorized(address _patientAddress) {
@@ -237,7 +243,6 @@ contract PrivaHealth is Ownable {
         )
     {
         Patient storage p = patients[_patientAddress];
-        require(p.dateOfBirth != 0, "Patient record does not exist");
         require(
             p.authorizedDoctors[msg.sender] ||
             p.authorizedHealthCenters[msg.sender],
@@ -250,5 +255,27 @@ contract PrivaHealth is Ownable {
     function setHealthCenterAuthorization(address _healthCenter, bool _isAuthorized) public {
         require(msg.sender == owner(), "Only the owner can call this function");
         authorizedHealthCenters[_healthCenter] = _isAuthorized;
+    }
+
+    // Function for a patient to initialize themselves with default values
+    function initializePatient() public {
+        require(!initializedPatients[msg.sender], "Patient already initialized");
+
+        Patient storage newPatient = patients[msg.sender];
+        newPatient.name = "";
+        newPatient.dateOfBirth = 0; // Current timestamp as a placeholder
+        newPatient.gender = "";
+        newPatient.contactInfoHash = "";
+        newPatient.emergencyContactHash = "";
+        newPatient.medicalRecord = "";
+        newPatient.currentMedications = "";
+        newPatient.allergies = "";
+        newPatient.bloodType = "";
+        newPatient.lastUpdated = block.timestamp;
+        newPatient.dataSharing = false;
+
+        initializedPatients[msg.sender] = true;
+
+        emit PatientInitialized(msg.sender);
     }
 }

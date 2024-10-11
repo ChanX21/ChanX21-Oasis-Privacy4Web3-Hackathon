@@ -2,8 +2,8 @@
   <div class="health-center-page container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-8 text-white">Health Center Dashboard</h1>
     
-    <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Input Patient Data</h2>
+    <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg mb-8">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Add/Update Patient Data</h2>
       <form @submit.prevent="submitPatientData" class="space-y-4">
         <div>
           <label for="patientAddress" class="block text-white mb-2">Patient Address</label>
@@ -52,17 +52,6 @@
           >
         </div>
         <div>
-          <label for="dataSharing" class="block text-white mb-2">Data Sharing</label>
-          <select 
-            v-model="patientData.dataSharing" 
-            id="dataSharing"
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white"
-          >
-            <option :value="true">Enabled</option>
-            <option :value="false">Disabled</option>
-          </select>
-        </div>
-        <div>
           <label for="medicalRecord" class="block text-white mb-2">Medical Record</label>
           <textarea 
             v-model="patientData.medicalRecord" 
@@ -97,11 +86,65 @@
         </button>
       </form>
     </div>
+
+    <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Update Patient Record</h2>
+      <form @submit.prevent="updatePatientRecord" class="space-y-4">
+        <div>
+          <label for="updatePatientAddress" class="block text-white mb-2">Patient Address</label>
+          <input 
+            v-model="updateData.patientAddress" 
+            id="updatePatientAddress"
+            type="text" 
+            placeholder="0x..."
+            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+          >
+        </div>
+        <div>
+          <label for="updateMedicalRecord" class="block text-white mb-2">Medical Record</label>
+          <textarea 
+            v-model="updateData.medicalRecord" 
+            id="updateMedicalRecord"
+            rows="3"
+            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+          ></textarea>
+        </div>
+        <div>
+          <label for="updateCurrentMedications" class="block text-white mb-2">Current Medications</label>
+          <textarea 
+            v-model="updateData.currentMedications" 
+            id="updateCurrentMedications"
+            rows="3"
+            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+          ></textarea>
+        </div>
+        <div>
+          <label for="updateAllergies" class="block text-white mb-2">Allergies</label>
+          <textarea 
+            v-model="updateData.allergies" 
+            id="updateAllergies"
+            rows="3"
+            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+          ></textarea>
+        </div>
+        <button 
+          type="submit"
+          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
+        >
+          Update Patient Record
+        </button>
+      </form>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
+import { usePrivaHealth } from '../contracts';
+import { useEthereumStore } from '../stores/ethereum';
+
+const eth = useEthereumStore();
+const privaHealth = usePrivaHealth();
 
 const patientData = ref({
   patientAddress: '',
@@ -109,36 +152,88 @@ const patientData = ref({
   dateOfBirth: '',
   gender: '',
   bloodType: '',
-  dataSharing: true,
   medicalRecord: '',
   currentMedications: '',
   allergies: ''
 });
 
-const submitPatientData = () => {
-  // Convert dateOfBirth to Unix timestamp
-  const dateOfBirth = new Date(patientData.value.dateOfBirth).getTime() / 1000;
-  
-  // Get current timestamp for lastUpdated
-  const lastUpdated = Math.floor(Date.now() / 1000);
+const updateData = ref({
+  patientAddress: '',
+  medicalRecord: '',
+  currentMedications: '',
+  allergies: ''
+});
 
-  // Prepare data for contract interaction
-  const contractData = {
-    patient: patientData.value.patientAddress,
-    name: patientData.value.name,
-    dateOfBirth: dateOfBirth,
-    gender: patientData.value.gender,
-    bloodType: patientData.value.bloodType,
-    lastUpdated: lastUpdated,
-    dataSharing: patientData.value.dataSharing,
-    medicalRecord: patientData.value.medicalRecord,
-    currentMedications: patientData.value.currentMedications,
-    allergies: patientData.value.allergies
-  };
+const errors = ref<string[]>([]);
 
-  console.log('Submitting patient data:', contractData);
-  // Here you would typically interact with your smart contract
-  // For example: yourContract.methods.updatePatientData(contractData).send({from: healthCenterAddress})
+function handleError(error: Error, errorMessage: string) {
+  errors.value.push(`${errorMessage}: ${error.message ?? JSON.stringify(error)}`);
+  console.error(error);
+}
+
+const submitPatientData = async () => {
+  try {
+    if (!privaHealth.value) {
+      throw new Error('PrivaHealth contract not initialized');
+    }
+
+    // Convert dateOfBirth to Unix timestamp
+    const dateOfBirth = Math.floor(new Date(patientData.value.dateOfBirth).getTime() / 1000);
+
+    // Call the contract method to add patient record
+    const tx = await privaHealth.value.addPatientRecord(
+      patientData.value.patientAddress,
+      patientData.value.name,
+      dateOfBirth,
+      patientData.value.gender,
+      '', // contactInfoHash
+      '', // emergencyContactHash
+      patientData.value.medicalRecord,
+      patientData.value.currentMedications,
+      patientData.value.allergies,
+      patientData.value.bloodType
+    );
+
+    await tx.wait();
+    console.log('Patient data submitted successfully');
+    alert('Patient data submitted successfully');
+
+    // Clear the form after successful submission
+    Object.keys(patientData.value).forEach(key => {
+      patientData.value[key as keyof typeof patientData.value] = '';
+    });
+
+  } catch (e) {
+    handleError(e as Error, 'Failed to submit patient data');
+  }
+};
+
+const updatePatientRecord = async () => {
+  try {
+    if (!privaHealth.value) {
+      throw new Error('PrivaHealth contract not initialized');
+    }
+
+    // Call the contract method to update patient record
+    const tx = await privaHealth.value.updatePatientRecord(
+      updateData.value.patientAddress,
+      updateData.value.medicalRecord,
+      updateData.value.currentMedications,
+      updateData.value.allergies
+    );
+
+    await tx.wait();
+    console.log('Patient record updated successfully');
+    alert('Patient record updated successfully');
+
+    // Clear the form after successful update
+    Object.keys(updateData.value).forEach(key => {
+      updateData.value[key as keyof typeof updateData.value] = '';
+    });
+
+  } catch (e) {
+    handleError(e as Error, 'Failed to update patient record');
+  }
 };
 </script>
 
