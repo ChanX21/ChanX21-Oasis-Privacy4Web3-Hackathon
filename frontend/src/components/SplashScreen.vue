@@ -30,7 +30,7 @@ onMounted(() => {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #3498db, #8e44ad);
+  background: linear-gradient(135deg, #4169E1, #F0F8FF);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -39,7 +39,6 @@ onMounted(() => {
 
 .content {
   text-align: center;
-  color: white;
 }
 
 .logo {
@@ -49,24 +48,10 @@ onMounted(() => {
   animation: pulse 2s infinite;
 }
 
-.title {
-  font-size: 3rem;
-  font-weight: bold;
-  margin-bottom: 10px;
-  animation: slideIn 1s ease-out;
-}
-
-.tagline {
-  font-size: 1.2rem;
-  margin-bottom: 30px;
-  opacity: 0;
-  animation: fadeIn 1s ease-out 0.5s forwards;
-}
-
 .loading-bar {
   width: 200px;
   height: 4px;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(65, 105, 225, 0.3);
   margin: 0 auto;
   border-radius: 2px;
   overflow: hidden;
@@ -75,7 +60,7 @@ onMounted(() => {
 .progress {
   width: 0;
   height: 100%;
-  background-color: white;
+  background-color: #4169E1;
   animation: loading 2.5s ease-in-out;
 }
 
@@ -93,16 +78,6 @@ onMounted(() => {
   0% { transform: scale(1); }
   50% { transform: scale(1.05); }
   100% { transform: scale(1); }
-}
-
-@keyframes slideIn {
-  from { transform: translateY(-20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
 }
 
 @keyframes loading {
