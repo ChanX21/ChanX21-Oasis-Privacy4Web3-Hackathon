@@ -34,7 +34,7 @@ const navigateTo = (route: string) => {
           </div>
         </div>
         <div class="md:w-1/2">
-          <img src="@/assets/images/blockchain-icon.svg" alt="Healthcare Illustration" class="w-full max-w-[70%] mx-auto floating-animation">
+          <img src="@/assets/images/PrivaBlockchain.png" alt="Healthcare Illustration" class="w-full max-w-[75%] mx-auto floating-animation">
         </div>
       </div>
 
