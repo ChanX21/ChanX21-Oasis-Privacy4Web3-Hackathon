@@ -16,19 +16,22 @@ const navigateTo = (route: string) => {
   <section class="landing-page">
     <div class="container mx-auto px-4 py-16">
       <div class="hero-section flex flex-col md:flex-row items-center justify-between mb-16">
-        <div class="md:w-1/2 mb-8 md:mb-0">
+        <div class="md:w-2/3 mb-8 md:mb-0">
           <h1 class="text-5xl font-bold text-white mb-6">Share Your Health Data Securely With <br/> Priva Health</h1>
           <p class="text-xl text-gray-300 mb-8">
             PrivaHealth empowers patients, doctors, and health centers with secure, private, and accessible medical records.
           </p>
           <div class="flex flex-wrap gap-4">
-            <AppButton variant="primary" class="text-lg px-6 py-3 w-full sm:w-auto" @click="navigateTo('/patient')">
+            <AppButton variant="primary" class="text-lg px-6 py-3 w-full sm:w-auto flex items-center justify-center" @click="navigateTo('/patient')">
+              <Icon icon="mdi:account-heart" class="mr-2 text-2xl" />
               For Patients
             </AppButton>
-            <AppButton variant="secondary" class="text-lg px-6 py-3 w-full sm:w-auto" @click="navigateTo('/doctor')">
+            <AppButton variant="secondary" class="text-lg px-6 py-3 w-full sm:w-auto flex items-center justify-center" @click="navigateTo('/doctor')">
+              <Icon icon="mdi:doctor" class="mr-2 text-2xl" />
               For Doctors
             </AppButton>
-            <AppButton variant="tertiary" class="text-lg px-6 py-3 w-full sm:w-[200px]" @click="navigateTo('/health-center')">
+            <AppButton variant="tertiary" class="text-lg px-6 py-3 w-full sm:w-[200px] flex items-center justify-center" @click="navigateTo('/health-center')">
+              <Icon icon="mdi:hospital-building" class="mr-2 text-2xl" />
               For Health Centers
             </AppButton>
           </div>
@@ -210,6 +213,11 @@ p {
   }
 }
 
+/* Add this new style for the icons */
+:deep(.iconify) {
+  font-size: 1.9em; /* Increase size by 90% */
+}
+
 /* Add this new style for the tertiary button */
 :deep(.btn-tertiary) {
   background-color: transparent;
@@ -258,5 +266,14 @@ p {
   .hero-section .flex > * {
     margin-bottom: 1rem;
   }
+}
+
+/* Add this new style for the buttons */
+:deep(.btn-primary),
+:deep(.btn-secondary),
+:deep(.btn-tertiary) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
 </style>
