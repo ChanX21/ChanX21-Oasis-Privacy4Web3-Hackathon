@@ -67,6 +67,13 @@
       </div>
     </div>
   </div>
+  <PopupMessage
+    :show="showPopup"
+    :type="popupType"
+    :title="popupTitle"
+    :message="popupMessage"
+    @close="closePopup"
+  />
 </template>
 
 <script setup lang="ts">
@@ -74,6 +81,7 @@ import { ref, onMounted } from 'vue';
 import { usePrivaHealth } from '../contracts';
 import { useEthereumStore } from '../stores/ethereum';
 import { abbrAddr } from '@/utils/utils';
+import PopupMessage from '@/components/PopupMessage.vue';
 
 const eth = useEthereumStore();
 const privaHealth = usePrivaHealth();
@@ -84,6 +92,29 @@ const healthPlan = ref('');
 const errors = ref<string[]>([]);
 const isLoading = ref(true);
 const isInitialized = ref(false);
+
+const showPopup = ref(false);
+const popupType = ref<'success' | 'error'>('success');
+const popupTitle = ref('');
+const popupMessage = ref('');
+
+const closePopup = () => {
+  showPopup.value = false;
+};
+
+const showSuccessPopup = (title: string, message: string) => {
+  popupType.value = 'success';
+  popupTitle.value = title;
+  popupMessage.value = message;
+  showPopup.value = true;
+};
+
+const showErrorPopup = (title: string, message: string) => {
+  popupType.value = 'error';
+  popupTitle.value = title;
+  popupMessage.value = message;
+  showPopup.value = true;
+};
 
 onMounted(async () => {
   await checkInitializationStatus();
@@ -108,38 +139,46 @@ async function checkInitializationStatus() {
 async function initializePatient() {
   try {
     if (isInitialized.value) {
-      alert('Patient already initialized');
+      showErrorPopup('Already Initialized', 'Patient is already initialized');
       return;
     }
     const tx = await privaHealth.value?.initializePatient();
-    await tx.wait();
-    alert('Patient initialized successfully');
-    isInitialized.value = true;
+    if (tx) {
+      await tx.wait();
+      showSuccessPopup('Initialization Successful', 'Patient initialized successfully');
+      isInitialized.value = true;
+    }
   } catch (e) {
     handleError(e as Error, 'Failed to initialize patient');
+    showErrorPopup('Initialization Failed', 'Failed to initialize patient. Please try again.');
   }
 }
 
 async function authorizeDoctor() {
   try {
     if (!doctorAddress.value) return;
-    let result  = await privaHealth.value!.authorizeDoctor(doctorAddress.value);
-    console.log(result);
-    alert(`Doctor ${abbrAddr(doctorAddress.value)} authorized successfully`);
+    const tx = await privaHealth.value!.authorizeDoctor(doctorAddress.value);
+    await tx.wait();
+    showSuccessPopup('Doctor Authorized', `Doctor ${abbrAddr(doctorAddress.value)} authorized successfully`);
     doctorAddress.value = '';
   } catch (e) {
     handleError(e as Error, 'Failed to authorize doctor');
+    showErrorPopup('Authorization Failed', 'Failed to authorize doctor. Please try again.');
   }
 }
 
 async function authorizeHealthCentre() {
   try {
     if (!healthCentreAddress.value) return;
-    await privaHealth.value?.authorizeHealthCenter(healthCentreAddress.value);
-    alert(`Health Centre ${abbrAddr(healthCentreAddress.value)} authorized successfully`);
-    healthCentreAddress.value = '';
+    const tx = await privaHealth.value?.authorizeHealthCenter(healthCentreAddress.value);
+    if (tx) {
+      await tx.wait();
+      showSuccessPopup('Health Centre Authorized', `Health Centre ${abbrAddr(healthCentreAddress.value)} authorized successfully`);
+      healthCentreAddress.value = '';
+    }
   } catch (e) {
     handleError(e as Error, 'Failed to authorize health centre');
+    showErrorPopup('Authorization Failed', 'Failed to authorize health centre. Please try again.');
   }
 }
 

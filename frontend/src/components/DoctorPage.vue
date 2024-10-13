@@ -47,13 +47,19 @@
       </div>
     </div>
   </div>
+  <PopupMessage
+    :show="showPopup"
+    :type="popupType"
+    :title="popupTitle"
+    :message="popupMessage"
+    @close="closePopup"
+  />
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue';
 import { usePrivaHealth } from '../contracts';
-
-
+import PopupMessage from '@/components/PopupMessage.vue';
 
 const privaHealth = usePrivaHealth();
 const patientAddress = ref('');
@@ -61,14 +67,36 @@ const patientData = ref('');
 const symptoms = ref('');
 const diagnosticsResult = ref('');
 
-//         return (p.name, p.dateOfBirth, p.gender, p.bloodType, p.lastUpdated, p.dataSharing, p.medicalRecord, p.currentMedications, p.allergies);
+const showPopup = ref(false);
+const popupType = ref<'success' | 'error'>('success');
+const popupTitle = ref('');
+const popupMessage = ref('');
+
+const closePopup = () => {
+  showPopup.value = false;
+};
+
+const showSuccessPopup = (title: string, message: string) => {
+  popupType.value = 'success';
+  popupTitle.value = title;
+  popupMessage.value = message;
+  showPopup.value = true;
+};
+
+const showErrorPopup = (title: string, message: string) => {
+  popupType.value = 'error';
+  popupTitle.value = title;
+  popupMessage.value = message;
+  showPopup.value = true;
+};
 
 const seePatientData = async () => {
-  console.log('Viewing patient data for:', patientAddress.value);
-  const result = await privaHealth.value!.getSensitivePatientData((patientAddress.value));
-  console.log({result});
-  if (result) {
-    patientData.value = `Patient Data for ${patientAddress.value}
+  try {
+    console.log('Viewing patient data for:', patientAddress.value);
+    const result = await privaHealth.value!.getSensitivePatientData((patientAddress.value));
+    console.log({result});
+    if (result) {
+      patientData.value = `Patient Data for ${patientAddress.value}
 - Name: ${result[0]}
 - Date of Birth: ${new Date(Number(result[1])*1000).toLocaleDateString()}
 - Gender: ${result[2]}
@@ -78,9 +106,14 @@ const seePatientData = async () => {
 - Current Medications: ${result[7]}
 - Allergies:  ${result[8]}
 `;
-
-  } else {
-    patientData.value = 'No data found for this patient.';
+      showSuccessPopup('Patient Data Retrieved', 'Patient data has been successfully retrieved and displayed.');
+    } else {
+      patientData.value = 'No data found for this patient.';
+      showErrorPopup('No Data Found', 'No data found for the provided patient address.');
+    }
+  } catch (e) {
+    console.error('Error fetching patient data:', e);
+    showErrorPopup('Error', 'Failed to fetch patient data. Please try again.');
   }
 };
 
@@ -96,6 +129,8 @@ Recommended Actions:
 - Rest and hydration
 - Over-the-counter decongestants
 - Follow up if symptoms persist for more than 7 days`;
+
+  showSuccessPopup('Diagnostics Assistance', 'Diagnostic results have been generated and displayed.');
 };
 </script>
 
