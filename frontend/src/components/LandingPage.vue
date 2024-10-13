@@ -17,7 +17,7 @@ const navigateTo = (route: string) => {
     <div class="container mx-auto px-4 py-16">
       <div class="hero-section flex flex-col md:flex-row items-center justify-between mb-16">
         <div class="md:w-1/2 mb-8 md:mb-0">
-          <h1 class="text-5xl font-bold text-white mb-6">Share Your Health Data Securely With Blockchain</h1>
+          <h1 class="text-5xl font-bold text-white mb-6">Share Your Health Data Securely With <br/> Priva Health</h1>
           <p class="text-xl text-gray-300 mb-8">
             PrivaHealth empowers patients, doctors, and health centers with secure, private, and accessible medical records.
           </p>

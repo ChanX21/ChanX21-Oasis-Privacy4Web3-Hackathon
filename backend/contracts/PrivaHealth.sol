@@ -58,6 +58,18 @@ contract PrivaHealth is Ownable {
         // DoctorReview doctorRecommendation;      
     } 
 
+    // Struct to represent pending core info updates
+    struct PendingCoreUpdate {
+        string name;
+        uint256 dateOfBirth;
+        string gender;
+        string contactInfoHash;
+        string emergencyContactHash;
+        string bloodType;
+        bool patientApproved;
+        bool ownerApproved;
+    }
+
     // Mapping to store patient records by their address
     mapping(address => Patient) public patients;
 
@@ -69,6 +81,9 @@ contract PrivaHealth is Ownable {
 
     // Mapping to keep track of initialized patients
     mapping(address => bool) public initializedPatients;
+
+    // Mapping to store pending core info updates
+    mapping(address => PendingCoreUpdate) public pendingCoreUpdates;
 
     // Event to log when a new patient record is added
     event PatientRecordAdded(address patientAddress, string name);
@@ -82,6 +97,12 @@ contract PrivaHealth is Ownable {
     // Event to log when a patient is initialized
     event PatientInitialized(address patientAddress);
 
+    // Event to log when core patient info update is requested
+    event CorePatientInfoUpdateRequested(address patientAddress);
+
+    // Event to log when core patient info is updated
+    event CorePatientInfoUpdated(address patientAddress);
+
     // Modifier to ensure only authorized entities (doctors or health centers) can modify records
     modifier onlyAuthorized(address _patientAddress) {
         require(
@@ -94,7 +115,7 @@ contract PrivaHealth is Ownable {
 
     // Modifier to ensure only the patient can perform certain actions
     modifier onlyPatient() {
-        require(patients[msg.sender].lastUpdated != 0, "Only the patient can perform this action");
+        require(patients[msg.sender].lastUpdated > 0, "Only the patient can perform this action");
         _;
     }
 
@@ -111,9 +132,9 @@ contract PrivaHealth is Ownable {
         string memory _allergies,
         string memory _bloodType
     ) public  onlyAuthorized(_patientAddress) {
-        require(patients[msg.sender].lastUpdated == 0, "Patient record already exists");
+        require(initializedPatients[_patientAddress], "Patient not initialized");
 
-        Patient storage newPatient = patients[msg.sender];
+        Patient storage newPatient = patients[_patientAddress];
         newPatient.name = _name;
         newPatient.dateOfBirth = _dateOfBirth;
         newPatient.gender = _gender;
@@ -136,15 +157,59 @@ contract PrivaHealth is Ownable {
         string memory _currentMedications,
         string memory _allergies
     ) public onlyAuthorized(_patientAddress) {
-        require(patients[_patientAddress].lastUpdated != 0, "Patient record does not exist");
+        require(patients[_patientAddress].lastUpdated != 0, "Patient Not Added!");
 
-        Patient storage patient = patients[msg.sender];
+        Patient storage patient = patients[_patientAddress];
         patient.medicalRecord = _medicalRecord;
         patient.currentMedications = _currentMedications;
         patient.allergies = _allergies;
         patient.lastUpdated = block.timestamp;
 
         emit PatientRecordUpdated(msg.sender, patient.name);
+    }
+
+    // Function to request an update to core patient info
+    function requestCorePatientInfoUpdate(
+        string memory _name,
+        uint256 _dateOfBirth,
+        string memory _gender,
+        string memory _contactInfoHash,
+        string memory _emergencyContactHash,
+        string memory _bloodType
+    ) public onlyPatient {
+        PendingCoreUpdate storage update = pendingCoreUpdates[msg.sender];
+        update.name = _name;
+        update.dateOfBirth = _dateOfBirth;
+        update.gender = _gender;
+        update.contactInfoHash = _contactInfoHash;
+        update.emergencyContactHash = _emergencyContactHash;
+        update.bloodType = _bloodType;
+        update.patientApproved = true;
+        update.ownerApproved = false;
+
+        emit CorePatientInfoUpdateRequested(msg.sender);
+    }
+
+    // Function for the owner to approve a core patient info update
+    function approveCorePatinetInfoUpdate(address _patientAddress) public onlyOwner {
+        PendingCoreUpdate storage update = pendingCoreUpdates[_patientAddress];
+        require(update.patientApproved, "Patient has not approved this update");
+        update.ownerApproved = true;
+
+        // Apply the update
+        Patient storage patient = patients[_patientAddress];
+        patient.name = update.name;
+        patient.dateOfBirth = update.dateOfBirth;
+        patient.gender = update.gender;
+        patient.contactInfoHash = update.contactInfoHash;
+        patient.emergencyContactHash = update.emergencyContactHash;
+        patient.bloodType = update.bloodType;
+        patient.lastUpdated = block.timestamp;
+
+        // Clear the pending update
+        delete pendingCoreUpdates[_patientAddress];
+
+        emit CorePatientInfoUpdated(_patientAddress);
     }
 
     // Function for a patient to authorize a doctor
@@ -271,7 +336,7 @@ contract PrivaHealth is Ownable {
         newPatient.currentMedications = "";
         newPatient.allergies = "";
         newPatient.bloodType = "";
-        newPatient.lastUpdated = 0;
+        newPatient.lastUpdated = block.timestamp;
         newPatient.dataSharing = false;
 
         initializedPatients[msg.sender] = true;
