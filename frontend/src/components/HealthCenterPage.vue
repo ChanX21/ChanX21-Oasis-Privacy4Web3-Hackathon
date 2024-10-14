@@ -5,6 +5,7 @@
     <div class="grid md:grid-cols-2 gap-8">
       <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
         <h2 class="text-2xl font-semibold mb-4 text-white">Add Patient Data</h2>
+        <p class="text-gray-300 mb-4">Use this form to add a new patient record. Ensure all fields are filled accurately.</p>
         <form @submit.prevent="submitPatientData" class="space-y-4">
           <div>
             <label for="patientAddress" class="block text-white mb-2">Patient Address</label>
@@ -90,6 +91,7 @@
 
       <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
         <h2 class="text-2xl font-semibold mb-4 text-white">Update Patient Record</h2>
+        <p class="text-gray-300 mb-4">Update existing patient records here. Only modify the fields that need updating.</p>
         <form @submit.prevent="updatePatientRecord" class="space-y-4">
           <div>
             <label for="updatePatientAddress" class="block text-white mb-2">Patient Address</label>
@@ -136,6 +138,16 @@
           </button>
         </form>
       </div>
+    </div>
+
+    <div class="mt-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Important Information</h2>
+      <ul class="list-disc list-inside text-gray-300 space-y-2">
+        <li>Ensure patient consent before adding or updating any records.</li>
+        <li>Double-check all information for accuracy before submission.</li>
+        <li>For security reasons, sensitive data should be hashed before entry.</li>
+        <li>If you encounter any issues, please contact the system administrator.</li>
+      </ul>
     </div>
   </div>
 </template>

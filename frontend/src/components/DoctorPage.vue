@@ -6,6 +6,7 @@
       <!-- See Patient Data Form -->
       <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
         <h2 class="text-2xl font-semibold mb-4 text-white">See Patient Data</h2>
+        <p class="text-gray-300 mb-4">View sensitive medical information for patients who have authorized you. Enter the patient's Ethereum address.</p>
         <form @submit.prevent="seePatientData">
           <input 
             v-model="patientAddress" 
@@ -28,6 +29,7 @@
       <!-- Get Diagnostics Assistance Form -->
       <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
         <h2 class="text-2xl font-semibold mb-4 text-white">Get Diagnostics Assistance</h2>
+        <p class="text-gray-300 mb-4">Use our AI-powered system to get diagnostic suggestions based on patient symptoms.</p>
         <form @submit.prevent="getDiagnosticsAssistance">
           <textarea 
             v-model="symptoms" 
@@ -49,6 +51,7 @@
       <!-- Add Doctor Review Form -->
       <div class="mt-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
         <h2 class="text-2xl font-semibold mb-4 text-white">Add Doctor Review</h2>
+        <p class="text-gray-300 mb-4">Provide a review or recommendation for a patient. This will be visible to the patient and other authorized healthcare providers.</p>
         <form @submit.prevent="addDoctorReview">
           <input 
             v-model="reviewPatientAddress" 
