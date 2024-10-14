@@ -73,7 +73,7 @@ const navigateTo = (route: string) => {
         </div>
         <div v-if="activeTab === 'patients'" class="tab-content">
           <ol class="steps">
-            <li>Initialize your patient account on PrivaHealth</li>
+            <li>Register your patient account on PrivaHealth</li>
             <li>Control your data sharing preferences</li>
             <li>Authorize doctors and health centers to access your records</li>
             <li>View your health plan and doctor reviews</li>

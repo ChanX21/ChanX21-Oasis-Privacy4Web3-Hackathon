@@ -4,12 +4,12 @@
     
     <!-- Initialize Patient Button -->
     <div v-if="!isInitialized" class="mb-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Initialize Patient</h2>
+      <h2 class="text-2xl font-semibold mb-4 text-white">Register as Patient</h2>
       <button 
         @click="initializePatient"
         class="bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition duration-300"
       >
-        Initialize Patient
+        Register Patient
       </button>
     </div>
     
