@@ -45,17 +45,17 @@ const navigateTo = (route: string) => {
         <h2 class="text-3xl font-semibold text-white mb-8 text-center">Why Choose PrivaHealth?</h2>
         <div class="grid md:grid-cols-3 gap-8">
           <div class="feature-card">
-            <Icon icon="mdi:shield-lock-outline" class="text-4xl mb-4 text-primary" />
+            <Icon icon="mdi:shield-lock-outline" class="text-4xl mb-4 text-white" />
             <h3 class="text-xl font-semibold mb-2">Patient-Controlled Access</h3>
             <p>Patients have full control over who can access their medical records, ensuring privacy and security.</p>
           </div>
           <div class="feature-card">
-            <Icon icon="mdi:account-key-outline" class="text-4xl mb-4 text-primary" />
+            <Icon icon="mdi:account-key-outline" class="text-4xl mb-4 text-white" />
             <h3 class="text-xl font-semibold mb-2">Secure Data Sharing</h3>
             <p>Enable or disable data sharing for research purposes, putting you in control of your health information.</p>
           </div>
           <div class="feature-card">
-            <Icon icon="mdi:share-variant-outline" class="text-4xl mb-4 text-primary" />
+            <Icon icon="mdi:share-variant-outline" class="text-4xl mb-4 text-white" />
             <h3 class="text-xl font-semibold mb-2">Collaborative Healthcare</h3>
             <p>Seamlessly connect with authorized doctors and health centers for better coordinated care.</p>
           </div>
@@ -76,7 +76,7 @@ const navigateTo = (route: string) => {
             <li>Register your patient account on PrivaHealth</li>
             <li>Control your data sharing preferences</li>
             <li>Authorize doctors and health centers to access your records</li>
-            <li>View your health plan and doctor reviews</li>
+            <li>View your AI-assisted health plan and doctor reviews</li>
           </ol>
         </div>
         <div v-else-if="activeTab === 'doctors'" class="tab-content">
@@ -126,7 +126,11 @@ const navigateTo = (route: string) => {
 
 .feature-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 0 30px rgba(173, 216, 230, 0.6); /* Light blue glow */
+}
+
+.feature-card .iconify {
+  color: white;
 }
 
 h1, h2, h3 {
