@@ -12,9 +12,6 @@ pragma solidity ^0.8.0;
 // $$ |      $$ |  $$ |/ $$   |   $$$/    $$ |  $$ |      $$ |  $$ |$$       |$$ |  $$ |$$       |$$ |   $$ |  $$ |
 // $$/       $$/   $$/ $$$$$$/     $/     $$/   $$/       $$/   $$/ $$$$$$$$/ $$/   $$/ $$$$$$$$/ $$/    $$/   $$/ 
                                                                                                                 
-                                                                                                                
-                                                                                                                
-
 
 import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -31,16 +28,16 @@ contract PrivaHealth is Ownable {
 
     // Function to add a doctor review for a patient
     function addDoctorReview(address _patientAddress, string memory _review) public {
-        require(patients[_patientAddress].authorizedDoctors[msg.sender], "Only authorized doctors can add reviews");
+        require(
+            patients[_patientAddress].authorizedDoctors[msg.sender],
+            "Only authorized doctors can add reviews"
+        );
         uint256 reviewId = patientDoctorReviews[_patientAddress].length;
-        patientDoctorReviews[_patientAddress].push(DoctorReview({
-            id: reviewId,
-            review: _review,
-            timestamp: block.timestamp
-        }));
+        patientDoctorReviews[_patientAddress].push(
+            DoctorReview({id: reviewId, review: _review, timestamp: block.timestamp})
+        );
     }
 
-   
     // Struct to represent patient details
     struct Patient {
         string name; // Patient name (could be hashed for privacy)
@@ -69,8 +66,8 @@ contract PrivaHealth is Ownable {
         string currentMedications; // Short list of current medications (optional, hashed)
         string allergies; // Known allergies (optional, hashed)
         string bloodType; // Patient's blood type
-        // DoctorReview doctorRecommendation;      
-    } 
+        // DoctorReview doctorRecommendation;
+    }
 
     // Struct to represent pending core info updates
     struct PendingCoreUpdate {
@@ -121,7 +118,7 @@ contract PrivaHealth is Ownable {
     modifier onlyAuthorized(address _patientAddress) {
         require(
             patients[_patientAddress].authorizedDoctors[msg.sender] ||
-            patients[_patientAddress].authorizedHealthCenters[msg.sender],
+                patients[_patientAddress].authorizedHealthCenters[msg.sender],
             "Not authorized to modify this record"
         );
         _;
@@ -145,7 +142,7 @@ contract PrivaHealth is Ownable {
         string memory _currentMedications,
         string memory _allergies,
         string memory _bloodType
-    ) public  onlyAuthorized(_patientAddress) {
+    ) public onlyAuthorized(_patientAddress) {
         require(initializedPatients[_patientAddress], "Patient not initialized");
 
         Patient storage newPatient = patients[_patientAddress];
@@ -238,7 +235,10 @@ contract PrivaHealth is Ownable {
 
     // Function for a patient to authorize a health center
     function authorizeHealthCenter(address _healthCenterAddress) public onlyPatient {
-        require(authorizedHealthCenters[_healthCenterAddress] == true, "Health center not authorized");
+        require(
+            authorizedHealthCenters[_healthCenterAddress] == true,
+            "Health center not authorized"
+        );
         patients[msg.sender].authorizedHealthCenters[_healthCenterAddress] = true;
     }
 
@@ -250,7 +250,7 @@ contract PrivaHealth is Ownable {
     // Function for a patient to set data sharing preferences
     function setDataSharing(bool _allowSharing) public onlyPatient {
         patients[msg.sender].dataSharing = _allowSharing;
-        
+
         if (_allowSharing) {
             // Add patient address to dataSharingArray if not already present
             bool isPresent = false;
@@ -278,13 +278,7 @@ contract PrivaHealth is Ownable {
     }
 
     // Function to retrieve patient records (only public, non-sensitive data)
-    function getPatientRecords()
-        public
-        view
-        returns (
-            PatientInfo[] memory
-        )
-    {   
+    function getPatientRecords() public view returns (PatientInfo[] memory) {
         PatientInfo[] memory patientInfo = new PatientInfo[](dataSharingArray.length);
         for (uint256 i = 0; i < dataSharingArray.length; i++) {
             Patient storage p = patients[dataSharingArray[i]];
@@ -306,7 +300,9 @@ contract PrivaHealth is Ownable {
     }
 
     // Function to retrieve sensitive patient data (only for authorized entities)
-    function getSensitivePatientData(address _patientAddress)
+    function getSensitivePatientData(
+        address _patientAddress
+    )
         public
         view
         returns (
@@ -323,15 +319,26 @@ contract PrivaHealth is Ownable {
     {
         Patient storage p = patients[_patientAddress];
         require(
-            p.authorizedDoctors[msg.sender] ||
-            p.authorizedHealthCenters[msg.sender],
+            p.authorizedDoctors[msg.sender] || p.authorizedHealthCenters[msg.sender],
             "Not authorized to access sensitive data"
         );
-        return (p.name, p.dateOfBirth, p.gender, p.bloodType, p.lastUpdated, p.dataSharing, p.medicalRecord, p.currentMedications, p.allergies);
+        return (
+            p.name,
+            p.dateOfBirth,
+            p.gender,
+            p.bloodType,
+            p.lastUpdated,
+            p.dataSharing,
+            p.medicalRecord,
+            p.currentMedications,
+            p.allergies
+        );
     }
 
-     // Function to get doctor reviews for a patient
-    function getDoctorReviews(address _patientAddress) public onlyPatient() view returns (DoctorReview[] memory)   {
+    // Function to get doctor reviews for a patient
+    function getDoctorReviews(
+        address _patientAddress
+    ) public view onlyPatient returns (DoctorReview[] memory) {
         return patientDoctorReviews[_patientAddress];
     }
 
