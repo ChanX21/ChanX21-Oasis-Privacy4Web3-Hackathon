@@ -26,6 +26,21 @@ contract PrivaHealth is Ownable {
         uint256 timestamp;
     }
 
+    // Mapping to store doctor reviews for each patient
+    mapping(address => DoctorReview[]) public patientDoctorReviews;
+
+    // Function to add a doctor review for a patient
+    function addDoctorReview(address _patientAddress, string memory _review) public {
+        require(patients[_patientAddress].authorizedDoctors[msg.sender], "Only authorized doctors can add reviews");
+        uint256 reviewId = patientDoctorReviews[_patientAddress].length;
+        patientDoctorReviews[_patientAddress].push(DoctorReview({
+            id: reviewId,
+            review: _review,
+            timestamp: block.timestamp
+        }));
+    }
+
+   
     // Struct to represent patient details
     struct Patient {
         string name; // Patient name (could be hashed for privacy)
@@ -37,7 +52,6 @@ contract PrivaHealth is Ownable {
         string currentMedications; // Short list of current medications (optional, hashed)
         string allergies; // Known allergies (optional, hashed)
         string bloodType; // Patient's blood type
-        // DoctorReview doctorRecommendation;
         uint256 lastUpdated; // Timestamp of the last update to the patient record
         bool dataSharing; // Whether the patient allows data sharing with R&D facilities
         mapping(address => bool) authorizedDoctors; // Mapping to store authorized doctors
@@ -316,6 +330,11 @@ contract PrivaHealth is Ownable {
         return (p.name, p.dateOfBirth, p.gender, p.bloodType, p.lastUpdated, p.dataSharing, p.medicalRecord, p.currentMedications, p.allergies);
     }
 
+     // Function to get doctor reviews for a patient
+    function getDoctorReviews(address _patientAddress) public onlyPatient() view returns (DoctorReview[] memory)   {
+        return patientDoctorReviews[_patientAddress];
+    }
+
     // Function to add or remove authorized health centers (should be restricted to admin in a real-world scenario)
     function setHealthCenterAuthorization(address _healthCenter, bool _isAuthorized) public {
         require(msg.sender == owner(), "Only the owner can call this function");
@@ -342,5 +361,15 @@ contract PrivaHealth is Ownable {
         initializedPatients[msg.sender] = true;
 
         emit PatientInitialized(msg.sender);
+    }
+
+    // Add this new function to the PrivaHealth contract
+    function getDataSharingStatus(address _patientAddress) public view returns (bool) {
+        return patients[_patientAddress].dataSharing;
+    }
+
+    // Add this new function to the PrivaHealth contract
+    function getWhetherPatientInitialized(address _patientAddress) public view returns (bool) {
+        return initializedPatients[_patientAddress];
     }
 }

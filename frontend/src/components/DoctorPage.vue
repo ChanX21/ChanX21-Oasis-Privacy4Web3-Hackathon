@@ -45,6 +45,30 @@
           <pre class="text-white">{{ diagnosticsResult }}</pre>
         </div>
       </div>
+
+      <!-- Add Doctor Review Form -->
+      <div class="mt-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Add Doctor Review</h2>
+        <form @submit.prevent="addDoctorReview">
+          <input 
+            v-model="reviewPatientAddress" 
+            type="text" 
+            placeholder="Enter patient's address"
+            class="w-full p-2 mb-4 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+          >
+          <textarea 
+            v-model="doctorReview" 
+            placeholder="Enter your review"
+            class="w-full p-2 mb-4 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300 h-32"
+          ></textarea>
+          <button 
+            type="submit"
+            class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600 transition duration-300"
+          >
+            Submit Review
+          </button>
+        </form>
+      </div>
     </div>
   </div>
   <PopupMessage
@@ -66,6 +90,8 @@ const patientAddress = ref('');
 const patientData = ref('');
 const symptoms = ref('');
 const diagnosticsResult = ref('');
+const reviewPatientAddress = ref('');
+const doctorReview = ref('');
 
 const showPopup = ref(false);
 const popupType = ref<'success' | 'error'>('success');
@@ -131,6 +157,25 @@ Recommended Actions:
 - Follow up if symptoms persist for more than 7 days`;
 
   showSuccessPopup('Diagnostics Assistance', 'Diagnostic results have been generated and displayed.');
+};
+
+const addDoctorReview = async () => {
+  try {
+    if (!reviewPatientAddress.value || !doctorReview.value) {
+      showErrorPopup('Invalid Input', 'Please enter both patient address and review.');
+      return;
+    }
+
+    const tx = await privaHealth.value?.addDoctorReview(reviewPatientAddress.value, doctorReview.value);
+    await tx?.wait();
+
+    showSuccessPopup('Review Added', 'Your review has been successfully added.');
+    reviewPatientAddress.value = '';
+    doctorReview.value = '';
+  } catch (e) {
+    console.error('Error adding doctor review:', e);
+    showErrorPopup('Error', 'Failed to add doctor review. Please try again.');
+  }
 };
 </script>
 

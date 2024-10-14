@@ -3,7 +3,7 @@
     <h1 class="text-4xl font-bold mb-8 text-white">Patient Dashboard</h1>
     
     <!-- Initialize Patient Button -->
-    <div class="mb-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+    <div v-if="!isInitialized" class="mb-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
       <h2 class="text-2xl font-semibold mb-4 text-white">Initialize Patient</h2>
       <button 
         @click="initializePatient"
@@ -11,6 +11,19 @@
       >
         Initialize Patient
       </button>
+    </div>
+    
+    <!-- Data Sharing Toggle -->
+    <div class="mb-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Data Sharing Settings</h2>
+      <div class="flex items-center">
+        <span class="mr-3 text-white">Data Sharing:</span>
+        <label class="switch">
+          <input type="checkbox" v-model="isDataSharingEnabled" @change="toggleDataSharing">
+          <span class="slider round"></span>
+        </label>
+        <span class="ml-3 text-white">{{ isDataSharingEnabled ? 'Enabled' : 'Disabled' }}</span>
+      </div>
     </div>
     
     <div class="grid md:grid-cols-2 gap-8">
@@ -66,6 +79,25 @@
         <pre class="text-white">{{ healthPlan }}</pre>
       </div>
     </div>
+
+    <!-- Doctor Reviews Section -->
+    <div class="mt-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+      <h2 class="text-2xl font-semibold mb-4 text-white">Doctor Reviews</h2>
+      <button 
+        @click="getDoctorReviews"
+        class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition duration-300 mb-4"
+      >
+        Get Doctor Reviews
+      </button>
+      <div v-if="doctorReviews.length > 0" class="bg-white bg-opacity-20 p-4 rounded">
+        <div v-for="(review, index) in doctorReviews" :key="index" class="mb-4 p-3 bg-white bg-opacity-10 rounded">
+          <p class="text-white"><strong>Review ID:</strong> {{ review.id }}</p>
+          <p class="text-white"><strong>Review:</strong> {{ review.review }}</p>
+          <p class="text-white"><strong>Timestamp:</strong> {{ new Date(Number(review.timestamp) * 1000).toLocaleString() }}</p>
+        </div>
+      </div>
+      <p v-else-if="reviewsFetched" class="text-white">No reviews found.</p>
+    </div>
   </div>
   <PopupMessage
     :show="showPopup"
@@ -78,20 +110,23 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
-import { usePrivaHealth } from '../contracts';
+import { usePrivaHealth, useUnwrappedPrivaHealth } from '../contracts';
 import { useEthereumStore } from '../stores/ethereum';
 import { abbrAddr } from '@/utils/utils';
 import PopupMessage from '@/components/PopupMessage.vue';
 
 const eth = useEthereumStore();
 const privaHealth = usePrivaHealth();
+const unwrappedPrivaHealth = useUnwrappedPrivaHealth();
+
 
 const doctorAddress = ref('');
 const healthCentreAddress = ref('');
 const healthPlan = ref('');
 const errors = ref<string[]>([]);
 const isLoading = ref(true);
-const isInitialized = ref(false);
+const isInitialized = ref(true);
+const isDataSharingEnabled = ref(false);
 
 const showPopup = ref(false);
 const popupType = ref<'success' | 'error'>('success');
@@ -116,8 +151,14 @@ const showErrorPopup = (title: string, message: string) => {
   showPopup.value = true;
 };
 
+const doctorReviews = ref<any[]>([]);
+const reviewsFetched = ref(false);
+
 onMounted(async () => {
   await checkInitializationStatus();
+  if (isInitialized.value) {
+    await checkDataSharingStatus();
+  }
 });
 
 function handleError(error: Error, errorMessage: string) {
@@ -127,26 +168,53 @@ function handleError(error: Error, errorMessage: string) {
 
 async function checkInitializationStatus() {
   try {
-    const patientAddress = await eth.signer.value?.getAddress();
+    const patientAddress = await eth.signer?.getAddress();
     if (patientAddress) {
-      isInitialized.value = await privaHealth.value?.initializedPatients(patientAddress);
+      const initialized = await unwrappedPrivaHealth.value?.getWhetherPatientInitialized(patientAddress);
+      if (initialized !== undefined) {
+        isInitialized.value = initialized;
+      }
     }
   } catch (e) {
     handleError(e as Error, 'Failed to check initialization status');
   }
 }
 
+async function checkDataSharingStatus() {
+  try {
+    const patientAddress = await eth.signer?.getAddress();
+    if (patientAddress) {
+      const status = await unwrappedPrivaHealth.value?.getDataSharingStatus(patientAddress);
+      isDataSharingEnabled.value = status !== undefined ? status : false;
+    }
+  } catch (e) {
+    handleError(e as Error, 'Failed to check data sharing status');
+  }
+}
+
+async function toggleDataSharing() {
+  try {
+    const tx = await privaHealth.value?.setDataSharing(isDataSharingEnabled.value);
+    await tx.wait();
+    showSuccessPopup(
+      'Data Sharing Updated',
+      `Data sharing has been ${isDataSharingEnabled.value ? 'enabled' : 'disabled'}`
+    );
+  } catch (e) {
+    handleError(e as Error, 'Failed to update data sharing status');
+    showErrorPopup('Update Failed', 'Failed to update data sharing status. Please try again.');
+    isDataSharingEnabled.value = !isDataSharingEnabled.value; // Revert the toggle if the transaction failed
+  }
+}
+
 async function initializePatient() {
   try {
-    if (isInitialized.value) {
-      showErrorPopup('Already Initialized', 'Patient is already initialized');
-      return;
-    }
     const tx = await privaHealth.value?.initializePatient();
     if (tx) {
       await tx.wait();
       showSuccessPopup('Initialization Successful', 'Patient initialized successfully');
       isInitialized.value = true;
+      await checkDataSharingStatus(); // Check data sharing status after initialization
     }
   } catch (e) {
     handleError(e as Error, 'Failed to initialize patient');
@@ -185,6 +253,29 @@ async function authorizeHealthCentre() {
 async function getHealthPlan() {
   healthPlan.value = "hellow world";
 }
+
+async function getDoctorReviews() {
+  try {
+    const patientAddress = await eth.signer.value?.getAddress();
+    if (patientAddress) {
+      const reviews = await privaHealth.value?.getDoctorReviews(patientAddress);
+      doctorReviews.value = reviews.map((review: any) => ({
+        id: review.id.toString(),
+        review: review.review,
+        timestamp: review.timestamp.toString()
+      }));
+      reviewsFetched.value = true;
+      if (doctorReviews.value.length > 0) {
+        showSuccessPopup('Reviews Retrieved', 'Doctor reviews have been successfully retrieved.');
+      } else {
+        showSuccessPopup('No Reviews', 'No doctor reviews found for your account.');
+      }
+    }
+  } catch (e) {
+    handleError(e as Error, 'Failed to get doctor reviews');
+    showErrorPopup('Retrieval Failed', 'Failed to get doctor reviews. Please try again.');
+  }
+}
 </script>
 
 <style scoped>
@@ -192,5 +283,61 @@ async function getHealthPlan() {
   background: linear-gradient(135deg, #1a237e, #283593);
   min-height: 100vh;
   font-family: 'Poppins', sans-serif;
+}
+
+/* Toggle switch styles */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #2196F3;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  transform: translateX(26px);
+}
+
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
 }
 </style>

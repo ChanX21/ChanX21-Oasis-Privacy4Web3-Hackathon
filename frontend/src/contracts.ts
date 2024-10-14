@@ -14,7 +14,7 @@ import { type ContractRunner, VoidSigner } from 'ethers';
 
 const messageBoxAddr = import.meta.env.VITE_MESSAGE_BOX_ADDR!;
 // const privaHealthAddr = import.meta.env.VITE_PRIVA_HEALTH_ADDR!;
-const privaHealthAddr = "0x3148292F8e38e4FA9ae409864A3F242C6Cf4c97e";
+const privaHealthAddr = "0xaE03B8d486Cea5c2868d9B272Ad119d5Ce369E61";
 
 
 // export function useMessageBox(): ComputedRef<MessageBox | null> {
