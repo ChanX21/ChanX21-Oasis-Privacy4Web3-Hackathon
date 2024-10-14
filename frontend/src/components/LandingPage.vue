@@ -17,9 +17,9 @@ const navigateTo = (route: string) => {
     <div class="container mx-auto px-4 py-16">
       <div class="hero-section flex flex-col md:flex-row items-center justify-between mb-16">
         <div class="md:w-2/3 mb-8 md:mb-0">
-          <h1 class="text-5xl font-bold text-white mb-6">Share Your Health Data Securely With <br/> Priva Health</h1>
+          <h1 class="text-5xl font-bold text-white mb-6">Secure and Private Health Data Management with PrivaHealth</h1>
           <p class="text-xl text-gray-300 mb-8">
-            PrivaHealth empowers patients, doctors, and health centers with secure, private, and accessible medical records.
+            PrivaHealth empowers patients with control over their medical records while enabling secure collaboration between patients, doctors, and health centers.
           </p>
           <div class="flex flex-wrap gap-4">
             <AppButton variant="primary" class="text-lg px-6 py-3 w-full sm:w-auto flex items-center justify-center" @click="navigateTo('/patient')">
@@ -46,18 +46,18 @@ const navigateTo = (route: string) => {
         <div class="grid md:grid-cols-3 gap-8">
           <div class="feature-card">
             <Icon icon="mdi:shield-lock-outline" class="text-4xl mb-4 text-primary" />
-            <h3 class="text-xl font-semibold mb-2">Secure Blockchain Storage</h3>
-            <p>Ensure the integrity and immutability of your medical records with cutting-edge blockchain technology.</p>
+            <h3 class="text-xl font-semibold mb-2">Patient-Controlled Access</h3>
+            <p>Patients have full control over who can access their medical records, ensuring privacy and security.</p>
           </div>
           <div class="feature-card">
             <Icon icon="mdi:account-key-outline" class="text-4xl mb-4 text-primary" />
-            <h3 class="text-xl font-semibold mb-2">Patient-Controlled Access</h3>
-            <p>Take full control of your personal health information and decide who can access your records.</p>
+            <h3 class="text-xl font-semibold mb-2">Secure Data Sharing</h3>
+            <p>Enable or disable data sharing for research purposes, putting you in control of your health information.</p>
           </div>
           <div class="feature-card">
             <Icon icon="mdi:share-variant-outline" class="text-4xl mb-4 text-primary" />
-            <h3 class="text-xl font-semibold mb-2">Seamless Sharing</h3>
-            <p>Effortlessly share your medical records with healthcare providers, ensuring coordinated and efficient care.</p>
+            <h3 class="text-xl font-semibold mb-2">Collaborative Healthcare</h3>
+            <p>Seamlessly connect with authorized doctors and health centers for better coordinated care.</p>
           </div>
         </div>
       </div>
@@ -73,32 +73,32 @@ const navigateTo = (route: string) => {
         </div>
         <div v-if="activeTab === 'patients'" class="tab-content">
           <ol class="steps">
-            <li>Sign up for a PrivaHealth account</li>
-            <li>Connect your existing medical records</li>
-            <li>Control access to your health information</li>
-            <li>Securely share records with healthcare providers</li>
+            <li>Initialize your patient account on PrivaHealth</li>
+            <li>Control your data sharing preferences</li>
+            <li>Authorize doctors and health centers to access your records</li>
+            <li>View your health plan and doctor reviews</li>
           </ol>
         </div>
         <div v-else-if="activeTab === 'doctors'" class="tab-content">
           <ol class="steps">
-            <li>Create a PrivaHealth professional account</li>
-            <li>Verify your medical credentials</li>
-            <li>Request access to patient records</li>
-            <li>Collaborate with patients and other providers</li>
+            <li>Get authorized by patients to access their records</li>
+            <li>View sensitive patient data securely</li>
+            <li>Add reviews and recommendations for patients</li>
+            <li>Use AI-assisted diagnostics for better care</li>
           </ol>
         </div>
         <div v-else class="tab-content">
           <ol class="steps">
-            <li>Register your health center on PrivaHealth</li>
-            <li>Set up secure data integration</li>
-            <li>Manage staff access and permissions</li>
-            <li>Streamline patient record management</li>
+            <li>Get authorized as a health center on PrivaHealth</li>
+            <li>Add and update patient records securely</li>
+            <li>Collaborate with patients and doctors</li>
+            <li>Maintain patient privacy while providing care</li>
           </ol>
         </div>
       </div>
 
       <div class="cta-section text-center">
-        <h2 class="text-3xl font-semibold text-white mb-6">Ready to Transform Your Healthcare Experience?</h2>
+        <h2 class="text-3xl font-semibold text-white mb-6">Ready to Take Control of Your Health Data?</h2>
         <AppButton variant="primary" class="text-lg px-8 py-3">
           Join PrivaHealth Today
         </AppButton>

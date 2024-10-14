@@ -66,37 +66,40 @@
       </div>
     </div>
 
-    <!-- Personalized Health Plan -->
-    <div class="mt-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Personalized Health Plan</h2>
-      <button 
-        @click="getHealthPlan"
-        class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 mb-4"
-      >
-        Get Health Plan
-      </button>
-      <div v-if="healthPlan" class="bg-white bg-opacity-20 p-4 rounded">
-        <pre class="text-white">{{ healthPlan }}</pre>
-      </div>
-    </div>
-
-    <!-- Doctor Reviews Section -->
-    <div class="mt-8 bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Doctor Reviews</h2>
-      <button 
-        @click="getDoctorReviews"
-        class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition duration-300 mb-4"
-      >
-        Get Doctor Reviews
-      </button>
-      <div v-if="doctorReviews.length > 0" class="bg-white bg-opacity-20 p-4 rounded">
-        <div v-for="(review, index) in doctorReviews" :key="index" class="mb-4 p-3 bg-white bg-opacity-10 rounded">
-          <p class="text-white"><strong>Review ID:</strong> {{ review.id }}</p>
-          <p class="text-white"><strong>Review:</strong> {{ review.review }}</p>
-          <p class="text-white"><strong>Timestamp:</strong> {{ new Date(Number(review.timestamp) * 1000).toLocaleString() }}</p>
+    <!-- Personalized Health Plan and Doctor Reviews side by side -->
+    <div class="grid md:grid-cols-2 gap-8 mt-8">
+      <!-- Personalized Health Plan -->
+      <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Personalized Health Plan</h2>
+        <button 
+          @click="getHealthPlan"
+          class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300 mb-4"
+        >
+          Get Health Plan
+        </button>
+        <div v-if="healthPlan" class="bg-white bg-opacity-20 p-4 rounded">
+          <pre class="text-white">{{ healthPlan }}</pre>
         </div>
       </div>
-      <p v-else-if="reviewsFetched" class="text-white">No reviews found.</p>
+
+      <!-- Doctor Reviews Section -->
+      <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Doctor Reviews</h2>
+        <button 
+          @click="getDoctorReviews"
+          class="bg-indigo-500 text-white px-4 py-2 rounded hover:bg-indigo-600 transition duration-300 mb-4"
+        >
+          Get Doctor Reviews
+        </button>
+        <div v-if="doctorReviews.length > 0" class="bg-white bg-opacity-20 p-4 rounded max-h-60 overflow-y-auto">
+          <div v-for="(review, index) in doctorReviews" :key="index" class="mb-4 p-3 bg-white bg-opacity-10 rounded">
+            <p class="text-white"><strong>Review ID:</strong> {{ review.id }}</p>
+            <p class="text-white"><strong>Review:</strong> {{ review.review }}</p>
+            <p class="text-white"><strong>Timestamp:</strong> {{ new Date(Number(review.timestamp) * 1000).toLocaleString() }}</p>
+          </div>
+        </div>
+        <p v-else-if="reviewsFetched" class="text-white">No reviews found.</p>
+      </div>
     </div>
   </div>
   <PopupMessage

@@ -2,138 +2,140 @@
   <div class="health-center-page container mx-auto px-4 py-8">
     <h1 class="text-4xl font-bold mb-8 text-white">Health Center Dashboard</h1>
     
-    <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg mb-8">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Add/Update Patient Data</h2>
-      <form @submit.prevent="submitPatientData" class="space-y-4">
-        <div>
-          <label for="patientAddress" class="block text-white mb-2">Patient Address</label>
-          <input 
-            v-model="patientData.patientAddress" 
-            id="patientAddress"
-            type="text" 
-            placeholder="0x..."
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+    <div class="grid md:grid-cols-2 gap-8">
+      <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Add Patient Data</h2>
+        <form @submit.prevent="submitPatientData" class="space-y-4">
+          <div>
+            <label for="patientAddress" class="block text-white mb-2">Patient Address</label>
+            <input 
+              v-model="patientData.patientAddress" 
+              id="patientAddress"
+              type="text" 
+              placeholder="0x..."
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            >
+          </div>
+          <div>
+            <label for="name" class="block text-white mb-2">Name</label>
+            <input 
+              v-model="patientData.name" 
+              id="name"
+              type="text" 
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            >
+          </div>
+          <div>
+            <label for="dateOfBirth" class="block text-white mb-2">Date of Birth</label>
+            <input 
+              v-model="patientData.dateOfBirth" 
+              id="dateOfBirth"
+              type="date" 
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            >
+          </div>
+          <div>
+            <label for="gender" class="block text-white mb-2">Gender</label>
+            <input 
+              v-model="patientData.gender" 
+              id="gender"
+              type="text" 
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            >
+          </div>
+          <div>
+            <label for="bloodType" class="block text-white mb-2">Blood Type</label>
+            <input 
+              v-model="patientData.bloodType" 
+              id="bloodType"
+              type="text" 
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            >
+          </div>
+          <div>
+            <label for="medicalRecord" class="block text-white mb-2">Medical Record</label>
+            <textarea 
+              v-model="patientData.medicalRecord" 
+              id="medicalRecord"
+              rows="3"
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            ></textarea>
+          </div>
+          <div>
+            <label for="currentMedications" class="block text-white mb-2">Current Medications</label>
+            <textarea 
+              v-model="patientData.currentMedications" 
+              id="currentMedications"
+              rows="3"
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            ></textarea>
+          </div>
+          <div>
+            <label for="allergies" class="block text-white mb-2">Allergies</label>
+            <textarea 
+              v-model="patientData.allergies" 
+              id="allergies"
+              rows="3"
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            ></textarea>
+          </div>
+          <button 
+            type="submit"
+            class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
           >
-        </div>
-        <div>
-          <label for="name" class="block text-white mb-2">Name</label>
-          <input 
-            v-model="patientData.name" 
-            id="name"
-            type="text" 
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          >
-        </div>
-        <div>
-          <label for="dateOfBirth" class="block text-white mb-2">Date of Birth</label>
-          <input 
-            v-model="patientData.dateOfBirth" 
-            id="dateOfBirth"
-            type="date" 
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          >
-        </div>
-        <div>
-          <label for="gender" class="block text-white mb-2">Gender</label>
-          <input 
-            v-model="patientData.gender" 
-            id="gender"
-            type="text" 
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          >
-        </div>
-        <div>
-          <label for="bloodType" class="block text-white mb-2">Blood Type</label>
-          <input 
-            v-model="patientData.bloodType" 
-            id="bloodType"
-            type="text" 
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          >
-        </div>
-        <div>
-          <label for="medicalRecord" class="block text-white mb-2">Medical Record</label>
-          <textarea 
-            v-model="patientData.medicalRecord" 
-            id="medicalRecord"
-            rows="3"
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          ></textarea>
-        </div>
-        <div>
-          <label for="currentMedications" class="block text-white mb-2">Current Medications</label>
-          <textarea 
-            v-model="patientData.currentMedications" 
-            id="currentMedications"
-            rows="3"
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          ></textarea>
-        </div>
-        <div>
-          <label for="allergies" class="block text-white mb-2">Allergies</label>
-          <textarea 
-            v-model="patientData.allergies" 
-            id="allergies"
-            rows="3"
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          ></textarea>
-        </div>
-        <button 
-          type="submit"
-          class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 transition duration-300"
-        >
-          Submit Patient Data
-        </button>
-      </form>
-    </div>
+            Submit Patient Data
+          </button>
+        </form>
+      </div>
 
-    <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
-      <h2 class="text-2xl font-semibold mb-4 text-white">Update Patient Record</h2>
-      <form @submit.prevent="updatePatientRecord" class="space-y-4">
-        <div>
-          <label for="updatePatientAddress" class="block text-white mb-2">Patient Address</label>
-          <input 
-            v-model="updateData.patientAddress" 
-            id="updatePatientAddress"
-            type="text" 
-            placeholder="0x..."
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+      <div class="bg-white bg-opacity-10 p-6 rounded-lg shadow-md backdrop-filter backdrop-blur-lg">
+        <h2 class="text-2xl font-semibold mb-4 text-white">Update Patient Record</h2>
+        <form @submit.prevent="updatePatientRecord" class="space-y-4">
+          <div>
+            <label for="updatePatientAddress" class="block text-white mb-2">Patient Address</label>
+            <input 
+              v-model="updateData.patientAddress" 
+              id="updatePatientAddress"
+              type="text" 
+              placeholder="0x..."
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            >
+          </div>
+          <div>
+            <label for="updateMedicalRecord" class="block text-white mb-2">Medical Record</label>
+            <textarea 
+              v-model="updateData.medicalRecord" 
+              id="updateMedicalRecord"
+              rows="3"
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            ></textarea>
+          </div>
+          <div>
+            <label for="updateCurrentMedications" class="block text-white mb-2">Current Medications</label>
+            <textarea 
+              v-model="updateData.currentMedications" 
+              id="updateCurrentMedications"
+              rows="3"
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            ></textarea>
+          </div>
+          <div>
+            <label for="updateAllergies" class="block text-white mb-2">Allergies</label>
+            <textarea 
+              v-model="updateData.allergies" 
+              id="updateAllergies"
+              rows="3"
+              class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
+            ></textarea>
+          </div>
+          <button 
+            type="submit"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
           >
-        </div>
-        <div>
-          <label for="updateMedicalRecord" class="block text-white mb-2">Medical Record</label>
-          <textarea 
-            v-model="updateData.medicalRecord" 
-            id="updateMedicalRecord"
-            rows="3"
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          ></textarea>
-        </div>
-        <div>
-          <label for="updateCurrentMedications" class="block text-white mb-2">Current Medications</label>
-          <textarea 
-            v-model="updateData.currentMedications" 
-            id="updateCurrentMedications"
-            rows="3"
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          ></textarea>
-        </div>
-        <div>
-          <label for="updateAllergies" class="block text-white mb-2">Allergies</label>
-          <textarea 
-            v-model="updateData.allergies" 
-            id="updateAllergies"
-            rows="3"
-            class="w-full p-2 border rounded bg-white bg-opacity-20 text-white placeholder-gray-300"
-          ></textarea>
-        </div>
-        <button 
-          type="submit"
-          class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition duration-300"
-        >
-          Update Patient Record
-        </button>
-      </form>
+            Update Patient Record
+          </button>
+        </form>
+      </div>
     </div>
   </div>
 </template>
