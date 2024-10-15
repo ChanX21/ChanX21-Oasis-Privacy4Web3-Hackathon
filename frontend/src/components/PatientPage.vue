@@ -283,7 +283,7 @@ async function getHealthPlan() {
           Allergies: ${result[8]}
         `;
 
-        const response = await axios.post('http://54.164.170.194:3000/api/chat/personalizedPlanAssistance', {
+        const response = await axios.post('https://priva-health-backend.vercel.app/api/chat/personalizedPlanAssistance', {
           prompt: `Based on the following patient information, please provide a personalized health plan:\n${patientInfo}`
         });
 

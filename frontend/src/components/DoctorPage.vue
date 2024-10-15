@@ -155,7 +155,7 @@ const getDiagnosticsAssistance = async () => {
   try {
     console.log('Getting diagnostics assistance for symptoms:', symptoms.value);
     isLoading.value = true;
-    const response = await axios.post('http://54.164.170.194:3000/api/chat/diagnosticsAssistant', {
+    const response = await axios.post('https://priva-health-backend.vercel.app/api/chat/diagnosticsAssistant', {
       prompt: `Patient symptoms: ${symptoms.value}\nPlease provide a diagnosis and recommended actions.`
     });
     
