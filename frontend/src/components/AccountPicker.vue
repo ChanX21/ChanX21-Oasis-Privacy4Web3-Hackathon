@@ -14,6 +14,7 @@ const unkNet = computed(() => eth.network === Network.Unknown);
 
 const connecting = ref(false);
 const isMetaMaskInstalled = ref(false);
+const switchingNetwork = ref(false);
 
 async function connectWallet() {
   if (!isMetaMaskInstalled.value) {
@@ -25,6 +26,7 @@ async function connectWallet() {
   connecting.value = true;
   try {
     await eth.connect();
+    await switchToSapphireTestnet();
   } catch (err) {
     if (!(err instanceof MetaMaskNotInstalledError)) {
       throw err;
@@ -36,11 +38,27 @@ async function connectWallet() {
   }
 }
 
+async function switchToSapphireTestnet() {
+  if (eth.network !== Network.SapphireTestnet) {
+    switchingNetwork.value = true;
+    try {
+      await eth.switchNetwork(Network.SapphireTestnet);
+    } catch (error) {
+      console.error('Failed to switch network:', error);
+    } finally {
+      switchingNetwork.value = false;
+    }
+  }
+}
+
 const isXlScreen = useMedia('(min-width: 1280px)');
 
 onMounted(async () => {
   try {
     await eth.getEthereumProvider();
+    if (eth.address) {
+      await switchToSapphireTestnet();
+    }
   } catch (err) {
     if (!(err instanceof MetaMaskNotInstalledError)) {
       throw err;
@@ -59,7 +77,7 @@ onMounted(async () => {
     class="account-picker"
     @click="connectWallet"
   >
-    <span class="account-picker-content" v-if="!connecting && eth.address">
+    <span class="account-picker-content" v-if="!connecting && !switchingNetwork && eth.address">
       <JazzIcon :size="isXlScreen ? 60 : 30" :address="eth.address" />
       <span class="font-mono font-bold">
         <abbr :title="eth.address" class="block no-underline">{{ abbrAddr(eth.address) }}</abbr>
@@ -76,6 +94,7 @@ onMounted(async () => {
     <span class="account-picker-content" v-else>
       <span>
         <span v-if="connecting">Connecting…</span>
+        <span v-else-if="switchingNetwork">Switching to Sapphire Testnet…</span>
         <span v-else>Connect Wallet</span>
       </span>
     </span>
