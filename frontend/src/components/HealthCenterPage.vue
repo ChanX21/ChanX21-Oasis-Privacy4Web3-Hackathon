@@ -147,6 +147,7 @@
         <li>Double-check all information for accuracy before submission.</li>
         <li>For security reasons, sensitive data should be hashed before entry.</li>
         <li>If you encounter any issues, please contact the system administrator.</li>
+        <li>Health centers need to be approved by the system admin before patient authorization.</li>
       </ul>
     </div>
   </div>
