@@ -43,8 +43,9 @@
             Get Assistance
           </button>
         </form>
-        <div v-if="diagnosticsResult" class="mt-4 bg-white bg-opacity-20 p-4 rounded">
-          <pre class="text-white">{{ diagnosticsResult }}</pre>
+        <AILoader v-if="isLoading" />
+        <div v-else-if="diagnosticsResult" class="mt-4 bg-white bg-opacity-20 p-4 rounded">
+          <div class="text-white whitespace-pre-wrap overflow-auto max-h-60">{{ diagnosticsResult }}</div>
         </div>
       </div>
 
@@ -87,6 +88,8 @@
 import { ref } from 'vue';
 import { usePrivaHealth } from '../contracts';
 import PopupMessage from '@/components/PopupMessage.vue';
+import AILoader from '@/components/AILoader.vue';
+import axios from 'axios';
 
 const privaHealth = usePrivaHealth();
 const patientAddress = ref('');
@@ -119,6 +122,8 @@ const showErrorPopup = (title: string, message: string) => {
   showPopup.value = true;
 };
 
+const isLoading = ref(false);
+
 const seePatientData = async () => {
   try {
     console.log('Viewing patient data for:', patientAddress.value);
@@ -146,20 +151,22 @@ const seePatientData = async () => {
   }
 };
 
-const getDiagnosticsAssistance = () => {
-  console.log('Getting diagnostics assistance for symptoms:', symptoms.value);
-  // Simulating API call to an AI diagnostics system
-  diagnosticsResult.value = `Possible Diagnoses:
-1. Common Cold (70% probability)
-2. Seasonal Allergies (20% probability)
-3. Sinus Infection (10% probability)
-
-Recommended Actions:
-- Rest and hydration
-- Over-the-counter decongestants
-- Follow up if symptoms persist for more than 7 days`;
-
-  showSuccessPopup('Diagnostics Assistance', 'Diagnostic results have been generated and displayed.');
+const getDiagnosticsAssistance = async () => {
+  try {
+    console.log('Getting diagnostics assistance for symptoms:', symptoms.value);
+    isLoading.value = true;
+    const response = await axios.post('http://localhost:3000/api/chat/diagnosticsAssistant', {
+      prompt: `Patient symptoms: ${symptoms.value}\nPlease provide a diagnosis and recommended actions.`
+    });
+    
+    diagnosticsResult.value = response.data.response;
+    showSuccessPopup('Diagnostics Assistance', 'Diagnostic results have been generated and displayed.');
+  } catch (error) {
+    console.error('Error getting diagnostics assistance:', error);
+    showErrorPopup('Error', 'Failed to get diagnostics assistance. Please try again.');
+  } finally {
+    isLoading.value = false;
+  }
 };
 
 const addDoctorReview = async () => {

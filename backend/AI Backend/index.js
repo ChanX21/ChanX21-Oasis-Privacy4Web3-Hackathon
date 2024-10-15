@@ -1,6 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
 const OpenAI = require('openai');
+const cors = require('cors');
 
 dotenv.config();
 
@@ -11,6 +12,7 @@ const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY
 });
 
+app.use(cors());
 app.use(express.json());
 
 app.post('/api/chat/diagnosticsAssistant', async (req, res) => {

@@ -319,7 +319,7 @@ contract PrivaHealth is Ownable {
     {
         Patient storage p = patients[_patientAddress];
         require(
-            p.authorizedDoctors[msg.sender] || p.authorizedHealthCenters[msg.sender],
+            p.authorizedDoctors[msg.sender] || p.authorizedHealthCenters[msg.sender] || _patientAddress == msg.sender,
             "Not authorized to access sensitive data"
         );
         return (

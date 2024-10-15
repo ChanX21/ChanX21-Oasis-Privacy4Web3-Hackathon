@@ -82,8 +82,9 @@
         >
           Get Health Plan
         </button>
-        <div v-if="healthPlan" class="bg-white bg-opacity-20 p-4 rounded">
-          <pre class="text-white">{{ healthPlan }}</pre>
+        <AILoader v-if="isLoading" />
+        <div v-else-if="healthPlan" class="bg-white bg-opacity-20 p-4 rounded">
+          <pre class="text-white whitespace-pre-wrap">{{ healthPlan }}</pre>
         </div>
       </div>
 
@@ -123,6 +124,8 @@ import { usePrivaHealth, useUnwrappedPrivaHealth } from '../contracts';
 import { useEthereumStore } from '../stores/ethereum';
 import { abbrAddr } from '@/utils/utils';
 import PopupMessage from '@/components/PopupMessage.vue';
+import axios from 'axios';
+import AILoader from '@/components/AILoader.vue';
 
 const eth = useEthereumStore();
 const privaHealth = usePrivaHealth();
@@ -133,7 +136,7 @@ const doctorAddress = ref('');
 const healthCentreAddress = ref('');
 const healthPlan = ref('');
 const errors = ref<string[]>([]);
-const isLoading = ref(true);
+const isLoading = ref(false);
 const isInitialized = ref(true);
 const isDataSharingEnabled = ref(false);
 
@@ -260,7 +263,38 @@ async function authorizeHealthCentre() {
 }
 
 async function getHealthPlan() {
-  healthPlan.value = "hellow world";
+  try {
+    isLoading.value = true;
+    const patientAddress = await eth.signer?.getAddress();
+    if (patientAddress) {
+      const result = await privaHealth.value!.getSensitivePatientData(patientAddress);
+      if (result) {
+        const patientInfo = `
+          Name: ${result[0]}
+          Date of Birth: ${new Date(Number(result[1])*1000).toLocaleDateString()}
+          Gender: ${result[2]}
+          Blood Type: ${result[3]}
+          Medical Records: ${result[6]}
+          Current Medications: ${result[7]}
+          Allergies: ${result[8]}
+        `;
+
+        const response = await axios.post('http://localhost:3000/api/chat/personalizedPlanAssistance', {
+          prompt: `Based on the following patient information, please provide a personalized health plan:\n${patientInfo}`
+        });
+
+        healthPlan.value = response.data.response;
+        showSuccessPopup('Health Plan Generated', 'Your personalized health plan has been generated and displayed.');
+      } else {
+        showErrorPopup('No Data Found', 'No patient data found. Please make sure your account is initialized.');
+      }
+    }
+  } catch (error) {
+    console.error('Error getting health plan:', error);
+    showErrorPopup('Error', 'Failed to get personalized health plan. Please try again.');
+  } finally {
+    isLoading.value = false;
+  }
 }
 
 async function getDoctorReviews() {
