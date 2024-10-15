@@ -72,9 +72,7 @@ app.post('/api/chat/personalizedPlanAssistance', async (req, res) => {
 
 app.get('/api/getResearchData', async (req, res) => {
   try {
-    const patientRecords = await privaHealthContract.getPatientRecords();
-    console.log({patientRecords})
-    
+    const patientRecords = await privaHealthContract.getPatientRecords();    
     // Transform the data to a more readable format
     const formattedRecords = patientRecords.map(record => ({
       patientAddress: record[0],
