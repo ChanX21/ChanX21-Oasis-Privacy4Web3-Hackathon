@@ -180,7 +180,7 @@ function handleError(error: Error, errorMessage: string) {
 
 async function checkInitializationStatus() {
   try {
-    const patientAddress = await eth.signer?.getAddress();
+    const patientAddress = await eth?.signer?.getAddress?.();
     if (patientAddress) {
       const initialized = await unwrappedPrivaHealth.value?.getWhetherPatientInitialized(patientAddress);
       if (initialized !== undefined) {
@@ -194,7 +194,7 @@ async function checkInitializationStatus() {
 
 async function checkDataSharingStatus() {
   try {
-    const patientAddress = await eth.signer?.getAddress();
+    const patientAddress = await eth?.signer?.getAddress?.();
     if (patientAddress) {
       const status = await unwrappedPrivaHealth.value?.getDataSharingStatus(patientAddress);
       isDataSharingEnabled.value = status !== undefined ? status : false;
@@ -265,7 +265,7 @@ async function authorizeHealthCentre() {
 async function getHealthPlan() {
   try {
     isLoading.value = true;
-    const patientAddress = await eth.signer?.getAddress();
+    const patientAddress = await eth?.signer?.getAddress?.();
     if (patientAddress) {
       const result = await privaHealth.value!.getSensitivePatientData(patientAddress);
       if (result) {
@@ -299,7 +299,7 @@ async function getHealthPlan() {
 
 async function getDoctorReviews() {
   try {
-    const patientAddress = await eth.signer.value?.getAddress();
+    const patientAddress = await eth?.signer?.getAddress?.();
     if (patientAddress) {
       const reviews = await privaHealth.value?.getDoctorReviews(patientAddress);
       doctorReviews.value = reviews.map((review: any) => ({
