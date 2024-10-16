@@ -2,7 +2,7 @@
 
 ![image](https://github.com/user-attachments/assets/608fd4f4-7fa9-414a-9466-27cc3775244c)
 
-PrivaHealth is a cutting-edge decentralized application (dApp) built on and powered by the Oasis Network, designed to transform private healthcare data management. By leveraging blockchain technology, PrivaHealth empowers patients with unprecedented control over their medical records while facilitating secure collaboration between patients, doctors, and health centers.
+PrivaHealth is a cutting-edge decentralized application (dApp) built on and powered by the Oasis Network, designed to transform private healthcare data management. By leveraging blockchain technology, PrivaHealth empowers patients with unprecedented control over their medical records while facilitating secure collaboration between patients, doctors, and health centers with OpenAI support and integration.
 
 ## Priva Health Architecture 
 
