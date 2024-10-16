@@ -1,4 +1,4 @@
-# PrivaHealth: Revolutionizing Healthcare on the Blockchain
+# PrivaHealth: Revolutionizing Healthcare Privacy Onchain
 
 ![image](https://github.com/user-attachments/assets/608fd4f4-7fa9-414a-9466-27cc3775244c)
 
