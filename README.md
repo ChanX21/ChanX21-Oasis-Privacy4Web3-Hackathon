@@ -1,34 +1,44 @@
 # PrivaHealth: Revolutionizing Healthcare on the Blockchain
 
-![PrivaHealth Logo](frontend/src/assets/images/PrivaBlockchain.png)
+![image](https://github.com/user-attachments/assets/608fd4f4-7fa9-414a-9466-27cc3775244c)
 
 PrivaHealth is a cutting-edge decentralized application (dApp) built on the Oasis Network, designed to transform healthcare data management. By leveraging blockchain technology, PrivaHealth empowers patients with unprecedented control over their medical records while facilitating secure collaboration between patients, doctors, and health centers.
 
-## 🚀 Key Features
+![image](https://github.com/user-attachments/assets/cc9943f6-a2b4-4123-8b27-5a4aba6b2ab4)
 
-- **🔐 Patient-Controlled Access**: Patients have full authority over their medical records.
-- **🔄 Secure Data Sharing**: Opt-in/out of sharing data for research purposes.
-- **👥 Collaborative Healthcare**: Seamless connection between patients, doctors, and health centers.
-- **🤖 AI-Assisted Health Plans**: Receive personalized health recommendations powered by advanced AI.
-- **⭐ Doctor Reviews**: Manage and view doctor reviews and recommendations.
-- **🛡️ Blockchain Security**: Utilize the Oasis Network for enhanced data protection and privacy.
 
-## 🌟 Why PrivaHealth?
+##  Key Features
+
+- **Patient-Controlled Access**: Patients have full authority over their medical records.
+- **Secure Data Sharing**: Opt-in/out of sharing data for research purposes.
+- **Collaborative Healthcare**: Seamless connection between patients, doctors, and health centers.
+- **AI-Assisted Health Plans**: Receive personalized health recommendations powered by advanced AI.
+- **Doctor Reviews**: Manage and view doctor reviews and recommendations.
+- **Blockchain Security**: Utilize the Oasis Network for enhanced data protection and privacy.
+
+##  Why PrivaHealth?
 
 1. **Empowerment**: Patients are in control of their health data.
 2. **Privacy**: State-of-the-art encryption ensures data confidentiality.
 3. **Efficiency**: Streamlined data sharing improves healthcare delivery.
 4. **Innovation**: AI-driven insights for better health outcomes.
-5. **Trust**: Transparent and immutable record-keeping.
+5. **Trust**: Encrypted and Private data.
 
-## 🛠️ Tech Stack
+![image](https://github.com/user-attachments/assets/06335988-ed1a-465f-962a-d509fd3d2a28)
+
+
+##  Tech Stack
 
 - **Smart Contracts**: Solidity
 - **Frontend**: Vue.js
 - **Blockchain**: Oasis Sapphire Network
 - **Development Environment**: Hardhat
 - **Ethereum Interaction**: Ethers.js
+- **Blockchain Network**: Oasis Sapphire Network
 
+##  Deployment Details 
+
+- **PrivaHealth Contract** - https://explorer.oasis.io/testnet/sapphire/address/0xb4efF2dECc0524D500F5bbdf1E7Ad9D99a377901
 ## 🚀 Quick Start
 
 ### Prerequisites
