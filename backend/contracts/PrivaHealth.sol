@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-
 //  _______   _______   ______  __     __   ______         __    __  ________   ______   __     ________  __    __ 
 // /       \ /       \ /      |/  |   /  | /      \       /  |  /  |/        | /      \ /  |   /        |/  |  /  |
 // $$$$$$$  |$$$$$$$  |$$$$$$/ $$ |   $$ |/$$$$$$  |      $$ |  $$ |$$$$$$$$/ /$$$$$$  |$$ |   $$$$$$$$/ $$ |  $$ |
@@ -11,7 +10,6 @@ pragma solidity ^0.8.0;
 // $$ |      $$ |  $$ | _$$ |_   $$ $$/   $$ |  $$ |      $$ |  $$ |$$ |_____ $$ |  $$ |$$ |_____ $$ |   $$ |  $$ |
 // $$ |      $$ |  $$ |/ $$   |   $$$/    $$ |  $$ |      $$ |  $$ |$$       |$$ |  $$ |$$       |$$ |   $$ |  $$ |
 // $$/       $$/   $$/ $$$$$$/     $/     $$/   $$/       $$/   $$/ $$$$$$$$/ $$/   $$/ $$$$$$$$/ $$/    $$/   $$/ 
-                                                                                                                
 
 import "@oasisprotocol/sapphire-contracts/contracts/Sapphire.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
@@ -97,10 +95,10 @@ contract PrivaHealth is Ownable {
     mapping(address => PendingCoreUpdate) public pendingCoreUpdates;
 
     // Event to log when a new patient record is added
-    event PatientRecordAdded(address patientAddress, string name);
+    event PatientRecordAdded(address patientAddress);
 
     // Event to log when a patient record is updated
-    event PatientRecordUpdated(address patientAddress, string name);
+    event PatientRecordUpdated(address patientAddress);
 
     // Event to log when data sharing is enabled or disabled
     event DataSharingChanged(address patientAddress, bool isEnabled);
@@ -113,6 +111,9 @@ contract PrivaHealth is Ownable {
 
     // Event to log when core patient info is updated
     event CorePatientInfoUpdated(address patientAddress);
+
+    // Event to log when a health center's authorization status is changed
+    event HealthCenterAuthorizationChanged(address healthCenter, bool isAuthorized);
 
     // Modifier to ensure only authorized entities (doctors or health centers) can modify records
     modifier onlyAuthorized(address _patientAddress) {
@@ -158,7 +159,7 @@ contract PrivaHealth is Ownable {
         newPatient.lastUpdated = block.timestamp;
         newPatient.dataSharing = false;
 
-        emit PatientRecordAdded(msg.sender, _name);
+        emit PatientRecordAdded(_patientAddress);
     }
 
     // Function to update a patient's record
@@ -176,7 +177,7 @@ contract PrivaHealth is Ownable {
         patient.allergies = _allergies;
         patient.lastUpdated = block.timestamp;
 
-        emit PatientRecordUpdated(msg.sender, patient.name);
+        emit PatientRecordUpdated(_patientAddress);
     }
 
     // Function to request an update to core patient info
@@ -319,7 +320,9 @@ contract PrivaHealth is Ownable {
     {
         Patient storage p = patients[_patientAddress];
         require(
-            p.authorizedDoctors[msg.sender] || p.authorizedHealthCenters[msg.sender] || _patientAddress == msg.sender,
+            p.authorizedDoctors[msg.sender] ||
+                p.authorizedHealthCenters[msg.sender] ||
+                _patientAddress == msg.sender,
             "Not authorized to access sensitive data"
         );
         return (
@@ -346,6 +349,7 @@ contract PrivaHealth is Ownable {
     function setHealthCenterAuthorization(address _healthCenter, bool _isAuthorized) public {
         require(msg.sender == owner(), "Only the owner can call this function");
         authorizedHealthCenters[_healthCenter] = _isAuthorized;
+        emit HealthCenterAuthorizationChanged(_healthCenter, _isAuthorized);
     }
 
     // Function for a patient to initialize themselves with default values
@@ -370,12 +374,12 @@ contract PrivaHealth is Ownable {
         emit PatientInitialized(msg.sender);
     }
 
-    // Add this new function to the PrivaHealth contract
+    /// Gets the data sharing status for a patient
     function getDataSharingStatus(address _patientAddress) public view returns (bool) {
         return patients[_patientAddress].dataSharing;
     }
 
-    // Add this new function to the PrivaHealth contract
+    /// Checks if a patient has been initialized in the contract
     function getWhetherPatientInitialized(address _patientAddress) public view returns (bool) {
         return initializedPatients[_patientAddress];
     }

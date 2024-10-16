@@ -10,6 +10,7 @@ import 'hardhat-watcher';
 import { TASK_COMPILE } from 'hardhat/builtin-tasks/task-names';
 import { HardhatUserConfig, task } from 'hardhat/config';
 import 'solidity-coverage';
+import '@nomicfoundation/hardhat-chai-matchers';
 
 import {
     deployContract,

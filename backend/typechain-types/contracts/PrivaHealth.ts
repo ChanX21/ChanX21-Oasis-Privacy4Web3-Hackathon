@@ -110,6 +110,7 @@ export interface PrivaHealthInterface extends Interface {
       | "CorePatientInfoUpdateRequested"
       | "CorePatientInfoUpdated"
       | "DataSharingChanged"
+      | "HealthCenterAuthorizationChanged"
       | "OwnershipTransferred"
       | "PatientInitialized"
       | "PatientRecordAdded"
@@ -366,6 +367,19 @@ export namespace DataSharingChangedEvent {
   export type LogDescription = TypedLogDescription<Event>;
 }
 
+export namespace HealthCenterAuthorizationChangedEvent {
+  export type InputTuple = [healthCenter: AddressLike, isAuthorized: boolean];
+  export type OutputTuple = [healthCenter: string, isAuthorized: boolean];
+  export interface OutputObject {
+    healthCenter: string;
+    isAuthorized: boolean;
+  }
+  export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
+  export type Filter = TypedDeferredTopicFilter<Event>;
+  export type Log = TypedEventLog<Event>;
+  export type LogDescription = TypedLogDescription<Event>;
+}
+
 export namespace OwnershipTransferredEvent {
   export type InputTuple = [previousOwner: AddressLike, newOwner: AddressLike];
   export type OutputTuple = [previousOwner: string, newOwner: string];
@@ -392,11 +406,10 @@ export namespace PatientInitializedEvent {
 }
 
 export namespace PatientRecordAddedEvent {
-  export type InputTuple = [patientAddress: AddressLike, name: string];
-  export type OutputTuple = [patientAddress: string, name: string];
+  export type InputTuple = [patientAddress: AddressLike];
+  export type OutputTuple = [patientAddress: string];
   export interface OutputObject {
     patientAddress: string;
-    name: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -405,11 +418,10 @@ export namespace PatientRecordAddedEvent {
 }
 
 export namespace PatientRecordUpdatedEvent {
-  export type InputTuple = [patientAddress: AddressLike, name: string];
-  export type OutputTuple = [patientAddress: string, name: string];
+  export type InputTuple = [patientAddress: AddressLike];
+  export type OutputTuple = [patientAddress: string];
   export interface OutputObject {
     patientAddress: string;
-    name: string;
   }
   export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>;
   export type Filter = TypedDeferredTopicFilter<Event>;
@@ -929,6 +941,13 @@ export interface PrivaHealth extends BaseContract {
     DataSharingChangedEvent.OutputObject
   >;
   getEvent(
+    key: "HealthCenterAuthorizationChanged"
+  ): TypedContractEvent<
+    HealthCenterAuthorizationChangedEvent.InputTuple,
+    HealthCenterAuthorizationChangedEvent.OutputTuple,
+    HealthCenterAuthorizationChangedEvent.OutputObject
+  >;
+  getEvent(
     key: "OwnershipTransferred"
   ): TypedContractEvent<
     OwnershipTransferredEvent.InputTuple,
@@ -991,6 +1010,17 @@ export interface PrivaHealth extends BaseContract {
       DataSharingChangedEvent.OutputObject
     >;
 
+    "HealthCenterAuthorizationChanged(address,bool)": TypedContractEvent<
+      HealthCenterAuthorizationChangedEvent.InputTuple,
+      HealthCenterAuthorizationChangedEvent.OutputTuple,
+      HealthCenterAuthorizationChangedEvent.OutputObject
+    >;
+    HealthCenterAuthorizationChanged: TypedContractEvent<
+      HealthCenterAuthorizationChangedEvent.InputTuple,
+      HealthCenterAuthorizationChangedEvent.OutputTuple,
+      HealthCenterAuthorizationChangedEvent.OutputObject
+    >;
+
     "OwnershipTransferred(address,address)": TypedContractEvent<
       OwnershipTransferredEvent.InputTuple,
       OwnershipTransferredEvent.OutputTuple,
@@ -1013,7 +1043,7 @@ export interface PrivaHealth extends BaseContract {
       PatientInitializedEvent.OutputObject
     >;
 
-    "PatientRecordAdded(address,string)": TypedContractEvent<
+    "PatientRecordAdded(address)": TypedContractEvent<
       PatientRecordAddedEvent.InputTuple,
       PatientRecordAddedEvent.OutputTuple,
       PatientRecordAddedEvent.OutputObject
@@ -1024,7 +1054,7 @@ export interface PrivaHealth extends BaseContract {
       PatientRecordAddedEvent.OutputObject
     >;
 
-    "PatientRecordUpdated(address,string)": TypedContractEvent<
+    "PatientRecordUpdated(address)": TypedContractEvent<
       PatientRecordUpdatedEvent.InputTuple,
       PatientRecordUpdatedEvent.OutputTuple,
       PatientRecordUpdatedEvent.OutputObject
